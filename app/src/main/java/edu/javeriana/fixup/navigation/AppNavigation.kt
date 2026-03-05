@@ -49,8 +49,8 @@ fun AppNavigation(
         // Feed screen
         composable(AppScreens.Feed.route) {
             FeedScreen(
-                onPublicationClick = {
-                    navController.navigate(AppScreens.Publication.route)
+                onPublicationClick = { id ->
+                    navController.navigate(AppScreens.Publication.route + "/$id")
                 }
             )
         }
@@ -88,8 +88,13 @@ fun AppNavigation(
         }
 
         // Publication screen
-        composable(AppScreens.Publication.route) {
+        composable(
+            route = AppScreens.Publication.route + "/{publicationId}",
+            arguments = listOf(navArgument("publicationId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val publicationId = backStackEntry.arguments?.getString("publicationId")
             PublicationScreen(
+                publicationId = publicationId,
                 onBackClick = { navController.popBackStack() },
                 onContactClick = { navController.navigate(AppScreens.Checkout.route) }
             )

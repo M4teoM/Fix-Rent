@@ -1,7 +1,6 @@
 package edu.javeriana.fixup.componentsUtils
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -25,14 +23,13 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import edu.javeriana.fixup.R
 import edu.javeriana.fixup.ui.theme.CharcoalBrown
 import edu.javeriana.fixup.ui.theme.GreyOlive
 import edu.javeriana.fixup.ui.theme.Inter
 import edu.javeriana.fixup.ui.theme.SoftFawn
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.foundation.layout.fillMaxWidth
 
 @Composable
 fun FixUpTitle(modifier: Modifier = Modifier) {
@@ -50,15 +47,15 @@ fun FixUpTextField(
     onValueChange: (String) -> Unit,
     placeholder: String,
     keyboardType: KeyboardType = KeyboardType.Text,
-    isPassword: Boolean = false,  // ← AGREGAR ESTA LÍNEA
-    isError: Boolean = false,      // ← AGREGAR ESTA LÍNEA
+    isPassword: Boolean = false,
+    isError: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         placeholder = { Text(text = placeholder) },
-        visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,  // ← USAR isPassword AQUÍ
+        visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         shape = RoundedCornerShape(12.dp),
         isError = isError,
@@ -283,8 +280,8 @@ fun SectionTitle(
 
 @Composable
 fun FeaturedImage(imageRes: Int, modifier: Modifier = Modifier) {
-    Image(
-        painter = painterResource(id = imageRes),
+    AsyncImage(
+        model = imageRes,
         contentDescription = null,
         modifier = modifier
             .fillMaxWidth()
@@ -307,8 +304,8 @@ fun CategoryItem(imageRes: Int, title: String, modifier: Modifier = Modifier) {
                 .background(SoftFawn.copy(alpha = 0.1f)),
             contentAlignment = Alignment.Center
         ) {
-            Image(
-                painter = painterResource(id = imageRes),
+            AsyncImage(
+                model = imageRes,
                 contentDescription = title,
                 modifier = Modifier.size(40.dp)
             )
@@ -341,8 +338,8 @@ fun PublicationCard(
             .clickable { onClick() }
     ) {
         Column {
-            Image(
-                painter = painterResource(id = imageRes),
+            AsyncImage(
+                model = imageRes,
                 contentDescription = title,
                 modifier = Modifier
                     .fillMaxWidth()
