@@ -33,9 +33,7 @@ import coil.request.ImageRequest
 import edu.javeriana.fixup.R
 import edu.javeriana.fixup.ui.model.PropertyModel
 import edu.javeriana.fixup.ui.model.RentUiState
-import edu.javeriana.fixup.ui.theme.CharcoalBrown
 import edu.javeriana.fixup.ui.theme.FixUpTheme
-import edu.javeriana.fixup.ui.theme.GreyOlive
 import edu.javeriana.fixup.ui.viewmodel.RentViewModel
 import java.text.NumberFormat
 import java.util.*
@@ -48,7 +46,9 @@ fun RentScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         RentHeader()
         
@@ -115,7 +115,7 @@ fun RentHeader(modifier: Modifier = Modifier) {
             .fillMaxWidth()
             .padding(16.dp),
         shape = RoundedCornerShape(24.dp),
-        color = Color(0xFFF5F5F5),
+        color = MaterialTheme.colorScheme.surfaceVariant,
         shadowElevation = 2.dp
     ) {
         Row(
@@ -126,7 +126,7 @@ fun RentHeader(modifier: Modifier = Modifier) {
             Icon(
                 imageVector = Icons.Outlined.Search,
                 contentDescription = null,
-                tint = GreyOlive
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column {
@@ -134,12 +134,12 @@ fun RentHeader(modifier: Modifier = Modifier) {
                     text = "Arriendos",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = CharcoalBrown
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = "3 habitaciones ⋅ 2 baños ⋅ parqueadero",
                     style = MaterialTheme.typography.bodySmall,
-                    color = GreyOlive
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                 )
             }
         }
@@ -162,7 +162,7 @@ fun FilterControls(modifier: Modifier = Modifier, resultCount: Int) {
         Text(
             text = "$resultCount resultados",
             style = MaterialTheme.typography.bodySmall,
-            color = GreyOlive
+            color = MaterialTheme.colorScheme.onBackground
         )
     }
 }
@@ -171,17 +171,27 @@ fun FilterControls(modifier: Modifier = Modifier, resultCount: Int) {
 private fun FilterButton(text: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
     Surface(
         shape = RoundedCornerShape(8.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray),
-        color = Color.White
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        color = MaterialTheme.colorScheme.surface
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp), tint = CharcoalBrown)
+            Icon(
+                icon, 
+                contentDescription = null, 
+                modifier = Modifier.size(18.dp), 
+                tint = MaterialTheme.colorScheme.onSurface
+            )
             Spacer(modifier = Modifier.width(4.dp))
-            Text(text, style = MaterialTheme.typography.labelLarge, color = CharcoalBrown)
-            Icon(Icons.Outlined.KeyboardArrowDown, contentDescription = null, modifier = Modifier.size(18.dp), tint = CharcoalBrown)
+            Text(text, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurface)
+            Icon(
+                Icons.Outlined.KeyboardArrowDown, 
+                contentDescription = null, 
+                modifier = Modifier.size(18.dp), 
+                tint = MaterialTheme.colorScheme.onSurface
+            )
         }
     }
 }
@@ -199,7 +209,10 @@ fun PropertyCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Column {
@@ -225,14 +238,15 @@ fun PropertyCard(
                 if (property.isFeatured) {
                     Surface(
                         modifier = Modifier.padding(12.dp).align(Alignment.TopStart),
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.primaryContainer,
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Text(
                             text = "Destacado",
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
                             style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
                 }
@@ -240,10 +254,15 @@ fun PropertyCard(
                 Surface(
                     modifier = Modifier.padding(12.dp).align(Alignment.TopEnd).size(36.dp),
                     shape = CircleShape,
-                    color = Color.White.copy(alpha = 0.8f)
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(Icons.Default.FavoriteBorder, contentDescription = null, modifier = Modifier.size(20.dp))
+                        Icon(
+                            Icons.Default.FavoriteBorder, 
+                            contentDescription = null, 
+                            modifier = Modifier.size(20.dp),
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
                     }
                 }
 
@@ -273,16 +292,21 @@ fun PropertyCard(
                     text = property.title,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = CharcoalBrown
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Outlined.StarBorder, contentDescription = null, modifier = Modifier.size(16.dp), tint = GreyOlive)
+                    Icon(
+                        Icons.Outlined.StarBorder, 
+                        contentDescription = null, 
+                        modifier = Modifier.size(16.dp), 
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = "Remodelado con nosotros",
                         style = MaterialTheme.typography.bodySmall,
-                        color = GreyOlive
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -307,15 +331,15 @@ fun PropertyCard(
                         text = "${currencyFormat.format(property.price)} $ /Mes",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
-                        color = CharcoalBrown
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Button(
                         onClick = onSelectClick,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.height(48.dp)
                     ) {
-                        Text("Seleccionar", fontWeight = FontWeight.Bold)
+                        Text("Seleccionar", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
                     }
                 }
             }
@@ -326,9 +350,9 @@ fun PropertyCard(
 @Composable
 private fun PropertyFeatureItem(icon: androidx.compose.ui.graphics.vector.ImageVector, text: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp), tint = GreyOlive)
+        Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(modifier = Modifier.width(4.dp))
-        Text(text, style = MaterialTheme.typography.bodySmall, color = GreyOlive)
+        Text(text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -369,7 +393,7 @@ private fun PriceTag(price: Double, isSelected: Boolean, modifier: Modifier = Mo
     }
     Surface(
         modifier = modifier,
-        color = if (isSelected) Color.Black else Color.White,
+        color = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(20.dp),
         shadowElevation = 4.dp
     ) {
@@ -378,7 +402,7 @@ private fun PriceTag(price: Double, isSelected: Boolean, modifier: Modifier = Mo
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
             style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.Bold,
-            color = if (isSelected) Color.White else Color.Black
+            color = if (isSelected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface
         )
     }
 }

@@ -1,5 +1,6 @@
 package edu.javeriana.fixup.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -20,7 +21,8 @@ import edu.javeriana.fixup.ui.viewmodel.FeedViewModel
 @Composable
 fun FeedScreen(
     viewModel: FeedViewModel = viewModel(),
-    onPublicationClick: (String) -> Unit = {}
+    onPublicationClick: (String) -> Unit = {},
+    onAllPublicationsClick: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -79,7 +81,8 @@ fun FeedScreen(
         item {
             SectionTitle(
                 text = "Publicaciones",
-                showArrow = true
+                showArrow = true,
+                modifier = Modifier.clickable { onAllPublicationsClick() }
             )
         }
 

@@ -1,27 +1,27 @@
 package edu.javeriana.fixup.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import edu.javeriana.fixup.R
 import edu.javeriana.fixup.ui.theme.FixUpTheme
 import edu.javeriana.fixup.ui.theme.SoftFawn
@@ -65,8 +65,8 @@ fun PublicationScreen(
                 .padding(horizontal = 16.dp)
         ) {
             item {
-                Image(
-                    painter = painterResource(id = publication.imageRes),
+                AsyncImage(
+                    model = publication.imageRes,
                     contentDescription = "Imagen de la publicación",
                     modifier = Modifier
                         .fillMaxWidth()
@@ -113,20 +113,106 @@ fun PublicationScreen(
                     lineHeight = 24.sp
                 )
                 
-                Spacer(modifier = Modifier.height(24.dp))
-                
-                Button(
-                    onClick = onContactClick,
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+
+            // Sección "Sobre tu fixer"
+            item {
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = SoftFawn)
+                    verticalAlignment = Alignment.Top
                 ) {
-                    Text(text = "Contactar Especialista", fontSize = 16.sp)
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        AsyncImage(
+                            model = R.drawable.profile_photo,
+                            contentDescription = "Fixer Photo",
+                            modifier = Modifier
+                                .size(100.dp)
+                                .clip(RoundedCornerShape(12.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row {
+                            repeat(4) { Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFFC107), modifier = Modifier.size(18.dp)) }
+                            Icon(Icons.Default.StarBorder, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(18.dp))
+                        }
+                        Text(text = "Destacados", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                    }
+                    
+                    Spacer(modifier = Modifier.width(16.dp))
+                    
+                    Column {
+                        Text(text = "Sobre tu fixer", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam commodo nunc nulla, ut rutrum nulla sodales id.",
+                            fontSize = 14.sp,
+                            color = Color.Gray,
+                            lineHeight = 20.sp
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+
+            // Sección de beneficios
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    BenefitItem(icon = Icons.Outlined.AccessTime, text = "Puntual")
+                    BenefitItem(icon = Icons.Outlined.Bolt, text = "Eficaz")
+                    BenefitItem(icon = Icons.Outlined.Payments, text = "Economico")
+                }
+                
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+
+            item {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Button(
+                        onClick = onContactClick,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = SoftFawn)
+                    ) {
+                        Text(text = "Ir al Pago", fontSize = 16.sp)
+                    }
+                    
+                    OutlinedButton(
+                        onClick = { /* Acción para contactar especialista */ },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, SoftFawn),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = SoftFawn)
+                    ) {
+                        Text(text = "Contactar Especialista", fontSize = 16.sp)
+                    }
                 }
                 
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
+    }
+}
+
+@Composable
+fun BenefitItem(icon: androidx.compose.ui.graphics.vector.ImageVector, text: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(48.dp),
+            tint = MaterialTheme.colorScheme.onSurface
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = text, 
+            fontSize = 14.sp, 
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
     }
 }
 

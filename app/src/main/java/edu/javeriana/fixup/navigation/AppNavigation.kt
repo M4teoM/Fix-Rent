@@ -51,6 +51,9 @@ fun AppNavigation(
             FeedScreen(
                 onPublicationClick = { id ->
                     navController.navigate(AppScreens.Publication.route + "/$id")
+                },
+                onAllPublicationsClick = {
+                    navController.navigate(AppScreens.AllPublications.route)
                 }
             )
         }
@@ -100,9 +103,28 @@ fun AppNavigation(
             )
         }
 
+        // All Publications screen
+        composable(AppScreens.AllPublications.route) {
+            AllPublicationsScreen(
+                onPublicationClick = { id ->
+                    navController.navigate(AppScreens.Publication.route + "/$id")
+                }
+            )
+        }
+
         // Checkout screen
         composable(AppScreens.Checkout.route) {
-            CheckoutScreen(onBackClick = { navController.popBackStack() })
+            CheckoutScreen(
+                onBackClick = { navController.popBackStack() },
+                onConfirmClick = { navController.navigate(AppScreens.Chat.route) }
+            )
+        }
+
+        // Chat screen
+        composable(AppScreens.Chat.route) {
+            ChatScreen(
+                onBackClick = { navController.popBackStack() }
+            )
         }
     }
 }

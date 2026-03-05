@@ -34,6 +34,7 @@ data class CheckoutItemUiModel(
 @Composable
 fun CheckoutScreen(
     onBackClick: () -> Unit,
+    onConfirmClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -98,7 +99,7 @@ fun CheckoutScreen(
         CheckoutSummary(subtotal = subtotal)
 
         Button(
-            onClick = { },
+            onClick = onConfirmClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
@@ -286,6 +287,6 @@ fun SummaryRow(
 @Composable
 fun CheckoutScreenPreview() {
     FixUpTheme {
-        CheckoutScreen(onBackClick = {})
+        CheckoutScreen(onBackClick = {}, onConfirmClick = {})
     }
 }
