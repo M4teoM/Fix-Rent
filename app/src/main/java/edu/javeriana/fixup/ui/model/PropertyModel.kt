@@ -15,7 +15,7 @@ package edu.javeriana.fixup.ui.model
  * @property rating Calificación promedio otorgada por usuarios.
  * @property reviewCount Cantidad de reseñas recibidas.
  * @property distanceKm Distancia en kilómetros desde el centro o punto de interés.
- * @property imageUrl URL de la imagen principal de la propiedad.
+ * @property imageUrls Lista de URLs de las imágenes de la propiedad.
  */
 data class PropertyModel(
     val id: String,
@@ -30,5 +30,8 @@ data class PropertyModel(
     val rating: Double,
     val reviewCount: Int,
     val distanceKm: Double,
-    val imageUrl: String
-)
+    val imageUrls: List<String>
+) {
+    // Para mantener compatibilidad con código que use imageUrl (devuelve la primera)
+    val imageUrl: String get() = imageUrls.firstOrNull() ?: ""
+}

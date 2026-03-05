@@ -7,6 +7,7 @@ object MockPropertyRepository {
 
     /**
      * Devuelve una lista de 5 propiedades realistas ubicadas en Bogotá, Colombia.
+     * Cada una con una lista de imágenes para el carrusel.
      *
      * @return List de [PropertyModel].
      */
@@ -25,7 +26,11 @@ object MockPropertyRepository {
                 rating = 4.8,
                 reviewCount = 15,
                 distanceKm = 1.2,
-                imageUrl = "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=800"
+                imageUrls = listOf(
+                    "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=800",
+                    "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&q=80&w=800",
+                    "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=800"
+                )
             ),
             PropertyModel(
                 id = "2",
@@ -40,7 +45,11 @@ object MockPropertyRepository {
                 rating = 4.5,
                 reviewCount = 8,
                 distanceKm = 4.5,
-                imageUrl = "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&q=80&w=800"
+                imageUrls = listOf(
+                    "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&q=80&w=800",
+                    "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&q=80&w=800",
+                    "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&q=80&w=800"
+                )
             ),
             PropertyModel(
                 id = "3",
@@ -55,7 +64,11 @@ object MockPropertyRepository {
                 rating = 4.9,
                 reviewCount = 22,
                 distanceKm = 0.5,
-                imageUrl = "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=800"
+                imageUrls = listOf(
+                    "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=800",
+                    "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=800",
+                    "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&q=80&w=800"
+                )
             ),
             PropertyModel(
                 id = "4",
@@ -70,7 +83,11 @@ object MockPropertyRepository {
                 rating = 4.2,
                 reviewCount = 30,
                 distanceKm = 8.0,
-                imageUrl = "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&q=80&w=800"
+                imageUrls = listOf(
+                    "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&q=80&w=800",
+                    "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&q=80&w=800",
+                    "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=800"
+                )
             ),
             PropertyModel(
                 id = "5",
@@ -85,7 +102,11 @@ object MockPropertyRepository {
                 rating = 5.0,
                 reviewCount = 5,
                 distanceKm = 2.5,
-                imageUrl = "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&q=80&w=800"
+                imageUrls = listOf(
+                    "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&q=80&w=800",
+                    "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=800",
+                    "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=800"
+                )
             )
         )
     }

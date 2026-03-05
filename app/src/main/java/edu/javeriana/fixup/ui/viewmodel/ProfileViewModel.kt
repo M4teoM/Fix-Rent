@@ -1,20 +1,33 @@
 package edu.javeriana.fixup.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import edu.javeriana.fixup.ui.model.ProfileUiState
+import edu.javeriana.fixup.ui.model.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class ProfileViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(ProfileUiState(
-        name = "Gabo peñuela",
-        address = "Calle 1 # 1-99 conjunto Alegre",
-        phone = "3002001010",
-        email = "jhondoe@siemprealegre.com",
-        role = "Cliente estrella"
-    ))
+    private val _uiState = MutableStateFlow(ProfileUiState(isLoading = true))
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
+
+    init {
+        loadUserData()
+    }
+
+    private fun loadUserData() {
+        viewModelScope.launch {
+            try {
+                val profile = UserRepository.getUserProfile()
+                _uiState.value = profile
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(isLoading = false)
+                // Aquí se podría manejar el error de carga si fuera necesario
+            }
+        }
+    }
 
     fun updateName(newName: String) {
         _uiState.value = _uiState.value.copy(name = newName)
