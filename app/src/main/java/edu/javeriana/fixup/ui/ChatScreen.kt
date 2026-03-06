@@ -43,33 +43,28 @@ fun ChatScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Scaffold(
-        bottomBar = { 
-            MessageInputBar(
-                value = uiState.currentMessage,
-                onValueChange = { viewModel.onMessageChanged(it) },
-                onSendClick = { viewModel.sendMessage() }
-            ) 
-        }
-    ) { padding ->
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF4F4F4))
+    ) {
+        ChatTopBar(
+            name = uiState.contactName,
+            status = uiState.status,
+            onBackClick = onBackClick
+        )
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .background(Color(0xFFF4F4F4))
-        ) {
+        Spacer(modifier = Modifier.height(12.dp))
 
-            ChatTopBar(
-                name = uiState.contactName,
-                status = uiState.status,
-                onBackClick = onBackClick
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
+        Box(modifier = Modifier.weight(1f)) {
             ChatContent(messages = uiState.messages)
         }
+
+        MessageInputBar(
+            value = uiState.currentMessage,
+            onValueChange = { viewModel.onMessageChanged(it) },
+            onSendClick = { viewModel.sendMessage() }
+        )
     }
 }
 

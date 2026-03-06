@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,8 +30,6 @@ import coil.request.ImageRequest
 import edu.javeriana.fixup.R
 import edu.javeriana.fixup.ui.theme.FixUpTheme
 import edu.javeriana.fixup.ui.viewmodel.PropertyDetailViewModel
-import java.text.NumberFormat
-import java.util.*
 
 @Composable
 fun PropertyDetailScreen(
@@ -45,12 +42,6 @@ fun PropertyDetailScreen(
 
     LaunchedEffect(propertyId) {
         viewModel.loadProperty(propertyId)
-    }
-
-    val currencyFormat = remember {
-        NumberFormat.getCurrencyInstance(Locale("es", "CO")).apply {
-            maximumFractionDigits = 0
-        }
     }
 
     if (uiState.isLoading) {
@@ -74,139 +65,103 @@ fun PropertyDetailScreen(
         return
     }
 
-    Scaffold(
-        bottomBar = {
-            BottomAppBar(
-                containerColor = Color.White,
-                contentPadding = PaddingValues(horizontal = 16.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
+        // Header with Image and Back button
+        Box(modifier = Modifier.height(300.dp)) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(property.imageUrl)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = "Property Image",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
+                placeholder = painterResource(R.drawable.chapi)
+            )
+            IconButton(
+                onClick = onBackClick,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(Alignment.TopStart)
+                    .background(Color.White, RoundedCornerShape(50.dp))
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+            }
+            Row(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(Alignment.TopEnd)
+            ) {
+                IconButton(
+                    onClick = { },
+                    modifier = Modifier
+                        .background(Color.White, RoundedCornerShape(50.dp))
                 ) {
-                    Column {
-                        Text(
-                            text = "${currencyFormat.format(property.price)} $",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
-                        )
-                        Text(
-                            text = "Por mes",
-                            fontSize = 12.sp,
-                            color = Color.Gray
-                        )
-                    }
-                    Button(
-                        onClick = onReserveClick,
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
-                    ) {
-                        Text("Reservar ahora")
-                    }
+                    Icon(Icons.Default.Share, contentDescription = "Share")
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                IconButton(
+                    onClick = { },
+                    modifier = Modifier
+                        .background(Color.White, RoundedCornerShape(50.dp))
+                ) {
+                    Icon(Icons.Default.FavoriteBorder, contentDescription = "Favorite")
                 }
             }
         }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-        ) {
-            // Header with Image and Back button
-            Box(modifier = Modifier.height(300.dp)) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(property.imageUrl)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = "Property Image",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop,
-                    placeholder = painterResource(R.drawable.chapi)
-                )
-                IconButton(
-                    onClick = onBackClick,
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .align(Alignment.TopStart)
-                        .background(Color.White, RoundedCornerShape(50.dp))
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                }
-                Row(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .align(Alignment.TopEnd)
-                ) {
-                    IconButton(
-                        onClick = { },
-                        modifier = Modifier
-                            .background(Color.White, RoundedCornerShape(50.dp))
-                    ) {
-                        Icon(Icons.Default.Share, contentDescription = "Share")
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    IconButton(
-                        onClick = { },
-                        modifier = Modifier
-                            .background(Color.White, RoundedCornerShape(50.dp))
-                    ) {
-                        Icon(Icons.Default.FavoriteBorder, contentDescription = "Favorite")
-                    }
+
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = property.title,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "Bogotá, Colombia",
+                fontSize = 16.sp,
+                color = Color.Gray
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                PropertyFeature(text = "${property.bedrooms} Habitaciones")
+                PropertyFeature(text = "${property.bathrooms} Baños")
+                if (property.hasParking) {
+                    PropertyFeature(text = "1 Parqueadero")
                 }
             }
 
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = property.title,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "Bogotá, Colombia",
-                    fontSize = 16.sp,
-                    color = Color.Gray
-                )
-                
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    PropertyFeature(text = "${property.bedrooms} Habitaciones")
-                    PropertyFeature(text = "${property.bathrooms} Baños")
-                    if (property.hasParking) {
-                        PropertyFeature(text = "1 Parqueadero")
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-                
-                Text(
-                    text = "Descripción",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = property.description,
-                    fontSize = 14.sp,
-                    color = Color.DarkGray
-                )
-                
-                Spacer(modifier = Modifier.height(24.dp))
-                
-                Text(
-                    text = "Lo que ofrece este lugar",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                Text("• Cocina integral", fontSize = 14.sp)
-                Text("• Wifi de alta velocidad", fontSize = 14.sp)
-                Text("• Zona de lavandería", fontSize = 14.sp)
-            }
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            Text(
+                text = "Descripción",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = property.description,
+                fontSize = 14.sp,
+                color = Color.DarkGray
+            )
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            Text(
+                text = "Lo que ofrece este lugar",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            Text("• Cocina integral", fontSize = 14.sp)
+            Text("• Wifi de alta velocidad", fontSize = 14.sp)
+            Text("• Zona de lavandería", fontSize = 14.sp)
         }
     }
 }
