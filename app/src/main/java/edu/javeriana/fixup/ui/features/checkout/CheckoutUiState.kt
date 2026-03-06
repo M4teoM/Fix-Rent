@@ -1,6 +1,5 @@
 package edu.javeriana.fixup.ui.features.checkout
 
-import edu.javeriana.fixup.ui.features.checkout.CheckoutItemUiModel
 
 data class CheckoutUiState(
     val selectedAddress: String = "Direcciones guardadas",
