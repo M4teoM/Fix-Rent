@@ -3,11 +3,13 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
 }
 
 android {
     namespace = "edu.javeriana.fixup"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "edu.javeriana.fixup"
@@ -63,6 +65,11 @@ dependencies {
     implementation(libs.androidx.compose.runtime)
     implementation("androidx.compose.material:material-icons-extended")
     implementation(libs.coil.compose)
+
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
 
     // Firebase
     implementation(platform(libs.firebase.bom))

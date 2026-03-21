@@ -2,15 +2,18 @@ package edu.javeriana.fixup.ui.features.checkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.javeriana.fixup.data.repository.CheckoutRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CheckoutViewModel(
-    private val repository: CheckoutRepository = CheckoutRepository()
+@HiltViewModel
+class CheckoutViewModel @Inject constructor(
+    private val repository: CheckoutRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CheckoutUiState())
     val uiState: StateFlow<CheckoutUiState> = _uiState.asStateFlow()

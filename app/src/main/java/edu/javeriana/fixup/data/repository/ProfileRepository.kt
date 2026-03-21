@@ -4,9 +4,10 @@ import android.net.Uri
 import com.google.firebase.auth.FirebaseUser
 import edu.javeriana.fixup.data.datasource.ProfileDataSource
 import edu.javeriana.fixup.data.util.toAppError
+import javax.inject.Inject
 
-class ProfileRepository(
-    private val profileDataSource: ProfileDataSource = ProfileDataSource()
+class ProfileRepository @Inject constructor(
+    private val profileDataSource: ProfileDataSource
 ) {
     /** Retorna el usuario actual de Firebase. */
     val currentUser: FirebaseUser?

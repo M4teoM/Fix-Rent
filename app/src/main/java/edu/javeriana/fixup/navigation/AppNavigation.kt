@@ -2,6 +2,7 @@ package edu.javeriana.fixup.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -50,6 +51,7 @@ fun AppNavigation(
         // Login screen
         composable(AppScreens.LogIn.route) {
             LogInScreen(
+                viewModel = hiltViewModel(),
                 onLoginSuccess = {
                     navController.navigate(AppScreens.Feed.route) {
                         popUpTo(AppScreens.LogIn.route) { inclusive = true }
@@ -64,6 +66,7 @@ fun AppNavigation(
         // Register screen
         composable(AppScreens.Register.route) {
             RegisterScreen(
+                viewModel = hiltViewModel(),
                 onBackClick = { navController.popBackStack() },
                 onRegisterSuccess = {
                     navController.navigate(AppScreens.Feed.route) {
@@ -76,6 +79,7 @@ fun AppNavigation(
         // Feed screen
         composable(AppScreens.Feed.route) {
             FeedScreen(
+                viewModel = hiltViewModel(),
                 onPublicationClick = { id ->
                     navController.navigate(AppScreens.Publication.route + "/$id")
                 },
@@ -88,6 +92,7 @@ fun AppNavigation(
         // Rent screen
         composable(AppScreens.Rent.route) {
             RentScreen(
+                viewModel = hiltViewModel(),
                 onSelectClick = { id ->
                     navController.navigate(AppScreens.PropertyDetail.route + "/$id")
                 }
@@ -96,12 +101,15 @@ fun AppNavigation(
 
         // Notifications screen
         composable(AppScreens.Notifications.route) {
-            NotificationsScreen()
+            NotificationsScreen(
+                viewModel = hiltViewModel()
+            )
         }
 
         // Profile screen - con logout
         composable(AppScreens.Profile.route) {
             ProfileScreen(
+                viewModel = hiltViewModel(),
                 onLogout = {
                     navController.navigate(AppScreens.LogIn.route) {
                         popUpTo(AppScreens.Feed.route) { inclusive = true }
@@ -118,6 +126,7 @@ fun AppNavigation(
             val propertyId = backStackEntry.arguments?.getString("propertyId")
             PropertyDetailScreen(
                 propertyId = propertyId,
+                viewModel = hiltViewModel(),
                 onBackClick = { navController.popBackStack() },
                 onReserveClick = { navController.navigate(AppScreens.Checkout.route) }
             )
@@ -131,6 +140,7 @@ fun AppNavigation(
             val publicationId = backStackEntry.arguments?.getString("publicationId")
             PublicationDetailScreen(
                 publicationId = publicationId,
+                viewModel = hiltViewModel(),
                 onBackClick = { navController.popBackStack() },
                 onContactClick = { navController.navigate(AppScreens.Checkout.route) }
             )
@@ -148,6 +158,7 @@ fun AppNavigation(
         // Checkout screen
         composable(AppScreens.Checkout.route) {
             CheckoutScreen(
+                viewModel = hiltViewModel(),
                 onBackClick = { navController.popBackStack() },
                 onConfirmClick = { navController.navigate(AppScreens.Chat.route) }
             )
@@ -156,6 +167,7 @@ fun AppNavigation(
         // Chat screen
         composable(AppScreens.Chat.route) {
             ChatScreen(
+                viewModel = hiltViewModel(),
                 onBackClick = { navController.popBackStack() }
             )
         }

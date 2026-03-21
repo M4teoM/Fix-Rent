@@ -3,6 +3,7 @@ package edu.javeriana.fixup.ui.features.profile
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.javeriana.fixup.data.repository.AuthRepository
 import edu.javeriana.fixup.data.repository.ProfileRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,10 +11,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ProfileViewModel(
-    private val authRepository: AuthRepository = AuthRepository(),
-    private val profileRepository: ProfileRepository = ProfileRepository()
+@HiltViewModel
+class ProfileViewModel @Inject constructor(
+    private val authRepository: AuthRepository,
+    private val profileRepository: ProfileRepository
 ) : ViewModel() {
 
     private val defaultImageUrl = "https://firebasestorage.googleapis.com/v0/b/fixup-f2128.firebasestorage.app/o/WhatsApp%20Image%202026-03-18%20at%205.27.50%20PM.jpeg?alt=media&token=7d9a7e23-31b0-4f0a-b705-c7c9d71abe64"
@@ -46,7 +49,6 @@ class ProfileViewModel(
             
             result.onSuccess { newUrl ->
                 // Agregamos un timestamp a la URL para forzar a Coil a refrescar la imagen
-                // Ejemplo: https://firebasestorage.../image.jpg?v=123456789
                 val freshUrl = if (newUrl.contains("?")) {
                     "$newUrl&t=${System.currentTimeMillis()}"
                 } else {

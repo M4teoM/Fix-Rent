@@ -6,10 +6,12 @@ import com.google.firebase.auth.userProfileChangeRequest
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
+import javax.inject.Inject
 
-class ProfileDataSource {
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val storage: FirebaseStorage = FirebaseStorage.getInstance()
+class ProfileDataSource @Inject constructor(
+    private val auth: FirebaseAuth,
+    private val storage: FirebaseStorage
+) {
 
     /** 
      * Sube la imagen a Firebase Storage con un tiempo límite realista.

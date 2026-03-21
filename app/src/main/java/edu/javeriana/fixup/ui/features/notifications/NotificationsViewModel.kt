@@ -2,13 +2,16 @@ package edu.javeriana.fixup.ui.features.notifications
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.javeriana.fixup.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class NotificationsViewModel : ViewModel() {
+@HiltViewModel
+class NotificationsViewModel @Inject constructor() : ViewModel() {
     private val _uiState = MutableStateFlow(NotificationsUiState(isLoading = true))
     val uiState: StateFlow<NotificationsUiState> = _uiState.asStateFlow()
 

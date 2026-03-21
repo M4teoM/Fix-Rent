@@ -1,8 +1,9 @@
 package edu.javeriana.fixup.data.datasource
 
 import edu.javeriana.fixup.ui.model.PropertyModel
+import javax.inject.Inject
 
-class RentDataSource {
+class RentDataSource @Inject constructor() {
     fun getRentProperties(): List<PropertyModel> {
         val baseUrl = "https://firebasestorage.googleapis.com/v0/b/fixup-f2128.firebasestorage.app/o/properties%2F"
         val suffix = "?alt=media"

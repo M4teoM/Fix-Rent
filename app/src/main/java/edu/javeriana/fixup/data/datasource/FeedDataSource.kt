@@ -3,8 +3,9 @@ package edu.javeriana.fixup.data.datasource
 import edu.javeriana.fixup.R
 import edu.javeriana.fixup.ui.features.feed.CategoryItemModel
 import edu.javeriana.fixup.ui.features.feed.PublicationCardModel
+import javax.inject.Inject
 
-class FeedDataSource {
+class FeedDataSource @Inject constructor() {
     fun getCategories(): List<CategoryItemModel> {
         return listOf(
             CategoryItemModel(R.drawable.bano, "Baños"),

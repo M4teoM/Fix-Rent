@@ -2,9 +2,10 @@ package edu.javeriana.fixup.data.repository
 
 import edu.javeriana.fixup.data.datasource.CheckoutDataSource
 import edu.javeriana.fixup.ui.features.checkout.CheckoutItemUiModel
+import javax.inject.Inject
 
-class CheckoutRepository(
-    private val dataSource: CheckoutDataSource = CheckoutDataSource()
+class CheckoutRepository @Inject constructor(
+    private val dataSource: CheckoutDataSource
 ) {
     fun getCheckoutItems(): Result<List<CheckoutItemUiModel>> {
         return try {

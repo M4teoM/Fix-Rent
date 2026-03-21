@@ -3,9 +3,10 @@ package edu.javeriana.fixup.data.repository
 import edu.javeriana.fixup.data.datasource.FeedDataSource
 import edu.javeriana.fixup.ui.features.feed.CategoryItemModel
 import edu.javeriana.fixup.ui.features.feed.PublicationCardModel
+import javax.inject.Inject
 
-class FeedRepository(
-    private val dataSource: FeedDataSource = FeedDataSource()
+class FeedRepository @Inject constructor(
+    private val dataSource: FeedDataSource
 ) {
     fun getCategories(): Result<List<CategoryItemModel>> {
         return try {

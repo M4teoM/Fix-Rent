@@ -2,14 +2,17 @@ package edu.javeriana.fixup.ui.features.rent
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.javeriana.fixup.data.repository.RentRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RentViewModel(
-    private val repository: RentRepository = RentRepository()
+@HiltViewModel
+class RentViewModel @Inject constructor(
+    private val repository: RentRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<RentUiState>(RentUiState.Loading)

@@ -1,8 +1,9 @@
 package edu.javeriana.fixup.data.datasource
 
 import edu.javeriana.fixup.ui.features.chat.MessageModel
+import javax.inject.Inject
 
-class ChatDataSource {
+class ChatDataSource @Inject constructor() {
     fun getMessages(): List<MessageModel> {
         return listOf(
             MessageModel(text = "Hola! quisiera saber mas sobre tu solicitud", isMe = true),

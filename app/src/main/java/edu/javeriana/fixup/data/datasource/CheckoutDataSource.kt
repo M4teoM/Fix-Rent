@@ -2,8 +2,9 @@ package edu.javeriana.fixup.data.datasource
 
 import edu.javeriana.fixup.R
 import edu.javeriana.fixup.ui.features.checkout.CheckoutItemUiModel
+import javax.inject.Inject
 
-class CheckoutDataSource {
+class CheckoutDataSource @Inject constructor() {
     fun getCheckoutItems(): List<CheckoutItemUiModel> {
         return listOf(
             CheckoutItemUiModel(
