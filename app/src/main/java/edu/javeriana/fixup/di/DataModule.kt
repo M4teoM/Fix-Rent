@@ -8,35 +8,36 @@ import edu.javeriana.fixup.data.datasource.*
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class DataModule {
+@Suppress("unused")
+interface DataModule {
 
     @Binds
-    abstract fun bindAuthDataSource(
+    fun bindAuthDataSource(
         authDataSourceImpl: AuthDataSourceImpl
     ): AuthDataSource
 
     @Binds
-    abstract fun bindFeedDataSource(
+    fun bindFeedDataSource(
         feedDataSourceImpl: FeedDataSourceImpl
     ): FeedDataSource
 
     @Binds
-    abstract fun bindRentDataSource(
+    fun bindRentDataSource(
         rentDataSourceImpl: RentDataSourceImpl
     ): RentDataSource
 
     @Binds
-    abstract fun bindChatDataSource(
+    fun bindChatDataSource(
         chatDataSourceImpl: ChatDataSourceImpl
     ): ChatDataSource
 
     @Binds
-    abstract fun bindProfileDataSource(
+    fun bindProfileDataSource(
         profileDataSourceImpl: ProfileDataSourceImpl
     ): ProfileDataSource
 
     @Binds
-    abstract fun bindCheckoutDataSource(
+    fun bindCheckoutDataSource(
         checkoutDataSourceImpl: CheckoutDataSourceImpl
     ): CheckoutDataSource
 }
