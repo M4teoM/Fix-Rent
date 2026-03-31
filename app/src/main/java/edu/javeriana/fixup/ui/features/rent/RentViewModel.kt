@@ -26,7 +26,12 @@ class RentViewModel @Inject constructor(
 
     private fun loadProperties() {
         viewModelScope.launch {
-            _uiState.value = RentUiState.Loading
+            // No reseteamos a Loading si ya tenemos datos para evitar parpadeos, 
+            // a menos que sea la primera carga.
+            if (_uiState.value !is RentUiState.Success) {
+                _uiState.value = RentUiState.Loading
+            }
+
             val result = repository.getProperties()
             
             result.onSuccess { properties ->

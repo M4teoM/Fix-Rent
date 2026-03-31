@@ -5,17 +5,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,19 +20,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import edu.javeriana.fixup.R
 import edu.javeriana.fixup.ui.model.PropertyModel
-import edu.javeriana.fixup.ui.theme.FixUpTheme
 import java.text.NumberFormat
 import java.util.*
 
 @Composable
 fun RentScreen(
-    viewModel: RentViewModel = viewModel(),
+    viewModel: RentViewModel = hiltViewModel(),
     onSelectClick: (String) -> Unit,
     onCreateClick: () -> Unit = {}
 ) {
@@ -64,12 +58,15 @@ fun RentScreen(
                     }
                 }
                 is RentUiState.Success -> {
-                    RentContent(
-                        properties = state.properties,
-                        onPropertySelected = { id ->
+                    val onPropertySelected = remember(viewModel, onSelectClick) {
+                        { id: Int ->
                             viewModel.onPropertySelected(id.toString())
                             onSelectClick(id.toString())
                         }
+                    }
+                    RentContent(
+                        properties = state.properties,
+                        onPropertySelected = onPropertySelected
                     )
                 }
                 is RentUiState.Error -> {
@@ -100,7 +97,10 @@ fun RentContent(
             MapAreaPlaceholder(modifier = Modifier.height(240.dp))
         }
 
-        items(properties) { property ->
+        items(
+            items = properties,
+            key = { it.id ?: it.hashCode() }
+        ) { property ->
             PropertyCard(
                 property = property,
                 onSelectClick = { property.id?.let { onPropertySelected(it) } },
@@ -125,7 +125,7 @@ fun RentHeader(modifier: Modifier = Modifier) {
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(imageVector = Icons.Outlined.Search, contentDescription = null)
+            Icon(imageVector = Icons.Outlined.Apartment, contentDescription = null)
             Spacer(modifier = Modifier.width(12.dp))
             Column {
                 Text(text = "Explorar Servicios", fontWeight = FontWeight.Bold)
@@ -157,8 +157,10 @@ fun PropertyCard(
     onSelectClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val currencyFormat = NumberFormat.getCurrencyInstance(Locale("es", "CO")).apply {
-        maximumFractionDigits = 0
+    val currencyFormat = remember {
+        NumberFormat.getCurrencyInstance(Locale("es", "CO")).apply {
+            maximumFractionDigits = 0
+        }
     }
 
     Card(
@@ -202,8 +204,9 @@ fun PropertyCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    val price = property.price ?: 0.0
                     Text(
-                        text = "${currencyFormat.format(property.price ?: 0.0)} $",
+                        text = "${currencyFormat.format(price)} $",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold
                     )

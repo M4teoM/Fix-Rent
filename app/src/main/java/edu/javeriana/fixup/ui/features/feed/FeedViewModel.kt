@@ -23,17 +23,21 @@ class FeedViewModel @Inject constructor(
     }
 
     private fun loadFeedData() {
+        // Cargamos categorías primero ya que suelen ser locales o más rápidas
         viewModelScope.launch {
             val categoriesResult = repository.getCategories()
-            val publicationsResult = repository.getPublications()
+            _uiState.update { it.copy(
+                categories = categoriesResult.getOrDefault(emptyList())
+            ) }
+        }
 
-            _uiState.update { state ->
-                state.copy(
-                    categories = categoriesResult.getOrDefault(emptyList()),
-                    publications = publicationsResult.getOrDefault(emptyList()),
-                    isLoading = false
-                )
-            }
+        // Cargamos publicaciones en paralelo
+        viewModelScope.launch {
+            val publicationsResult = repository.getPublications()
+            _uiState.update { it.copy(
+                publications = publicationsResult.getOrDefault(emptyList()),
+                isLoading = false
+            ) }
         }
     }
 

@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import edu.javeriana.fixup.R
 import edu.javeriana.fixup.ui.theme.FixUpTheme
 import edu.javeriana.fixup.ui.theme.SoftFawn
@@ -75,6 +77,8 @@ fun ProfileContent(
     onLogout: () -> Unit = {},
     onChangePhoto: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -92,13 +96,18 @@ fun ProfileContent(
                 .clickable { if (!uiState.isLoading) onChangePhoto() }, // Bloqueamos clic si está cargando
             contentAlignment = Alignment.Center
         ) {
-            // Imagen principal
+            // Imagen principal optimizada con Coil - Sin placeholder para carga directa
             AsyncImage(
-                model = uiState.profileImageUrl ?: R.drawable.profile_photo,
+                model = ImageRequest.Builder(context)
+                    .data(uiState.profileImageUrl ?: R.drawable.profile_photo)
+                    .crossfade(false) // Desactivado para que aparezca "de una"
+                    .diskCachePolicy(CachePolicy.ENABLED)
+                    .memoryCachePolicy(CachePolicy.ENABLED)
+                    .build(),
                 contentDescription = "Foto de perfil",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
-                // Eliminamos el placeholder para mostrar la imagen real lo antes posible
+                // Eliminamos el placeholder para cumplir con el requerimiento
                 error = painterResource(id = R.drawable.profile_photo)
             )
 

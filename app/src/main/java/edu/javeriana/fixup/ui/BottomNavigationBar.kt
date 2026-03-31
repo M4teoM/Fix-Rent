@@ -1,10 +1,10 @@
 package edu.javeriana.fixup.ui
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Apartment
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -48,7 +48,7 @@ fun BottomNavigationBar(
         )
 
         NavigationBarItem(
-            icon = { Icon(Icons.Outlined.Search, contentDescription = "Rent") },
+            icon = { Icon(Icons.Outlined.Apartment, contentDescription = "Rent") },
             label = { Text("Alquilar") },
             selected = currentRoute == AppScreens.Rent.route,
             colors = NavigationBarItemDefaults.colors(
