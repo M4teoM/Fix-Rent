@@ -48,6 +48,12 @@ class ProfileDataSourceImpl @Inject constructor(
     }
 
     override suspend fun createReview(review: edu.javeriana.fixup.ui.model.ReviewModel): edu.javeriana.fixup.ui.model.ReviewModel {
-        return apiService.createReview(review) as edu.javeriana.fixup.ui.model.ReviewModel
+        val request = ReviewRequest(
+            userId = review.userId.toIntOrNull() ?: 1,
+            serviceId = 1, // Valor por defecto para asegurar compatibilidad
+            rating = review.rating,
+            comment = review.comment
+        )
+        return apiService.createReview(request)
     }
 }
