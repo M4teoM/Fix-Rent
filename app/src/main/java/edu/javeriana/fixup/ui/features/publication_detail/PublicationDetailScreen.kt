@@ -148,17 +148,6 @@ private fun PublicationContent(
                 }
             }
         }
-        
-        // Floating Back Button
-        IconButton(
-            onClick = onBackClick,
-            modifier = Modifier
-                .padding(16.dp)
-                .align(Alignment.TopStart)
-                .background(Color.White.copy(alpha = 0.7f), CircleShape)
-        ) {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-        }
     }
 }
 
@@ -247,7 +236,7 @@ private fun AddReviewSection(
                                 Icon(
                                     imageVector = if (isSelected) Icons.Default.Star else Icons.Default.StarBorder,
                                     contentDescription = null,
-                                    tint = if (isSelected) Color(0xFFFFC107) else Color.Gray,
+                                    tint = if (isSelected) Color(0xFFFFC107) else MaterialTheme.colorScheme.outline,
                                     modifier = Modifier.size(36.dp)
                                 )
                             }
@@ -334,11 +323,11 @@ private fun ReviewsSection(reviews: List<ReviewModel>) {
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(Icons.Default.ChatBubbleOutline, contentDescription = null, modifier = Modifier.size(48.dp), tint = Color.LightGray)
+                    Icon(Icons.Default.ChatBubbleOutline, contentDescription = null, modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.outline)
                     Text(
                         text = "Aún no hay comentarios. ¡Sé el primero!",
                         fontSize = 14.sp,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -355,8 +344,8 @@ private fun ReviewsSection(reviews: List<ReviewModel>) {
 private fun ReviewItem(review: ReviewModel) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -387,7 +376,7 @@ private fun ReviewItem(review: ReviewModel) {
                             Icon(
                                 imageVector = Icons.Default.Star,
                                 contentDescription = null,
-                                tint = if (index < review.rating) Color(0xFFFFC107) else Color.LightGray,
+                                tint = if (index < review.rating) Color(0xFFFFC107) else MaterialTheme.colorScheme.outline,
                                 modifier = Modifier.size(14.dp)
                             )
                         }
@@ -395,7 +384,7 @@ private fun ReviewItem(review: ReviewModel) {
                         Text(
                             text = review.date,
                             fontSize = 12.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -415,9 +404,9 @@ private fun ReviewItem(review: ReviewModel) {
 private fun FixerSection() {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f)),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)),
         shape = RoundedCornerShape(16.dp)
     ) {
         Row(
@@ -439,7 +428,7 @@ private fun FixerSection() {
                 Text(
                     "Profesional con más de 5 años de experiencia en servicios para el hogar.",
                     fontSize = 12.sp,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     lineHeight = 16.sp
                 )
             }

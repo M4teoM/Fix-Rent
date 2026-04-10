@@ -56,4 +56,18 @@ class ProfileDataSourceImpl @Inject constructor(
         )
         return apiService.createReview(request)
     }
+
+    override suspend fun updateReview(id: String, review: edu.javeriana.fixup.ui.model.ReviewModel): edu.javeriana.fixup.ui.model.ReviewModel {
+        val request = ReviewRequest(
+            userId = review.userId.toIntOrNull() ?: 1,
+            serviceId = 1,
+            rating = review.rating,
+            comment = review.comment
+        )
+        return apiService.updateReview(id, request)
+    }
+
+    override suspend fun deleteReview(id: String) {
+        apiService.deleteReview(id)
+    }
 }
