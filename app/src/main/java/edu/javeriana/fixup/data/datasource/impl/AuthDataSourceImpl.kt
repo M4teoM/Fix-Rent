@@ -2,7 +2,7 @@ package edu.javeriana.fixup.data.datasource.impl
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import edu.javeriana.fixup.data.datasource.interfaces.AuthDataSource
+import edu.javeriana.fixup.data.datasource.AuthDataSource
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 

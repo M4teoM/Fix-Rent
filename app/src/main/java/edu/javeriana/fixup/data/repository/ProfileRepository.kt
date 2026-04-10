@@ -2,7 +2,7 @@ package edu.javeriana.fixup.data.repository
 
 import android.net.Uri
 import com.google.firebase.auth.FirebaseUser
-import edu.javeriana.fixup.data.datasource.interfaces.ProfileDataSource
+import edu.javeriana.fixup.data.datasource.ProfileDataSource
 import edu.javeriana.fixup.data.util.toAppError
 import javax.inject.Inject
 
@@ -52,7 +52,7 @@ class ProfileRepository @Inject constructor(
             val reviewToSave = edu.javeriana.fixup.ui.model.ReviewModel(
                 userId = "1", // ID fijo quemado
                 userName = user?.displayName ?: user?.email?.substringBefore("@") ?: "Usuario Prueba",
-                rating = rating.toDouble(),
+                rating = rating,
                 comment = comment,
                 date = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault()).format(java.util.Date())
             )
@@ -68,7 +68,7 @@ class ProfileRepository @Inject constructor(
             val reviewToUpdate = edu.javeriana.fixup.ui.model.ReviewModel(
                 id = reviewId,
                 userId = "1", // ID fijo quemado
-                rating = rating.toDouble(),
+                rating = rating,
                 comment = comment
             )
             val updatedReview = profileDataSource.updateReview(reviewId, reviewToUpdate)

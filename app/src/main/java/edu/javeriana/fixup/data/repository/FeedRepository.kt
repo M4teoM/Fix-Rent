@@ -4,7 +4,7 @@ import android.net.Uri
 import edu.javeriana.fixup.data.network.model.CategoryDto
 import edu.javeriana.fixup.data.network.model.PublicationDto
 import edu.javeriana.fixup.data.network.model.ReviewRequestDto
-import edu.javeriana.fixup.data.datasource.interfaces.FeedDataSource
+import edu.javeriana.fixup.data.datasource.FeedDataSource
 import edu.javeriana.fixup.ui.features.feed.CategoryItemModel
 import edu.javeriana.fixup.ui.features.feed.PublicationCardModel
 import edu.javeriana.fixup.ui.model.PropertyModel
@@ -36,6 +36,15 @@ class FeedRepository @Inject constructor(
         return try {
             val dto = dataSource.getPublicationById(id)
             Result.success(dto.toUiModel())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun createPublication(property: PropertyModel, imageUri: Uri): Result<PropertyModel> {
+        return try {
+            val created = dataSource.createPublication(property, imageUri)
+            Result.success(created)
         } catch (e: Exception) {
             Result.failure(e)
         }

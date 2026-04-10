@@ -59,10 +59,7 @@ fun AllPublicationsScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp),
             modifier = Modifier.fillMaxSize()
         ) {
-            items(
-                items = uiState.publications,
-                key = { it.id }
-            ) { publication ->
+            items(uiState.publications) { publication ->
                 VerticalPublicationItem(
                     imageUrl = publication.imageUrl,
                     title = publication.title,

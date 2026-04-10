@@ -1,6 +1,6 @@
 package edu.javeriana.fixup.di
 
-import edu.javeriana.fixup.data.network.api.FixUpApiService
+import edu.javeriana.fixup.data.network.service.FixUpApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

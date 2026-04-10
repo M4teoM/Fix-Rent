@@ -71,7 +71,7 @@ class PublicationDetailViewModel @Inject constructor(
             val request = ReviewRequestDto(
                 userId = 1, 
                 serviceId = serviceId,
-                rating = rating.toDouble(),
+                rating = rating,
                 comment = comment
             )
             
