@@ -1,6 +1,7 @@
-package edu.javeriana.fixup.data.datasource
+package edu.javeriana.fixup.data.datasource.impl
 
 import edu.javeriana.fixup.R
+import edu.javeriana.fixup.data.datasource.CheckoutDataSource
 import edu.javeriana.fixup.ui.features.checkout.CheckoutItemUiModel
 import javax.inject.Inject
 

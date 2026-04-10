@@ -1,8 +1,13 @@
-package edu.javeriana.fixup.data.datasource
+package edu.javeriana.fixup.data.datasource.impl
 
 import android.net.Uri
 import com.google.firebase.storage.FirebaseStorage
 import edu.javeriana.fixup.R
+import edu.javeriana.fixup.data.datasource.FeedDataSource
+import edu.javeriana.fixup.data.network.model.CategoryDto
+import edu.javeriana.fixup.data.network.model.PublicationDto
+import edu.javeriana.fixup.data.network.model.ReviewRequestDto
+import edu.javeriana.fixup.data.network.service.FixUpApiService
 import edu.javeriana.fixup.ui.model.PropertyModel
 import edu.javeriana.fixup.ui.model.ReviewModel
 import kotlinx.coroutines.tasks.await
@@ -27,12 +32,12 @@ class FeedDataSourceImpl @Inject constructor(
 
     override suspend fun getPublications(): List<PublicationDto> {
         val services = apiService.getServices()
-        return services.map { it.toDto() }
+        return services.map { it.toPublicationDto() }
     }
 
     override suspend fun getPublicationById(id: Int): PublicationDto {
         val service = apiService.getServiceById(id)
-        return service.toDto()
+        return service.toPublicationDto()
     }
 
     override suspend fun createPublication(property: PropertyModel, imageUri: Uri): PropertyModel {
@@ -48,22 +53,52 @@ class FeedDataSourceImpl @Inject constructor(
         // 3. Crear el objeto con la URL de la imagen y enviarlo a la API
         val publicationWithImage = property.copy(imageUrl = downloadUrl)
         
-        return apiService.createService(publicationWithImage)
+        val dto = edu.javeriana.fixup.data.network.model.PropertyDto(
+            id = publicationWithImage.id,
+            title = publicationWithImage.title,
+            description = publicationWithImage.description,
+            price = publicationWithImage.price,
+            location = publicationWithImage.location,
+            imageUrl = publicationWithImage.imageUrl
+        )
+        
+        val resultDto = apiService.createService(dto)
+        return PropertyModel(
+            id = resultDto.id,
+            title = resultDto.title,
+            description = resultDto.description,
+            price = resultDto.price,
+            location = resultDto.location,
+            imageUrl = resultDto.imageUrl
+        )
     }
 
     override suspend fun getReviewsByServiceId(serviceId: Int): List<ReviewModel> {
         return try {
-            apiService.getReviewsByServiceId(serviceId)
+            apiService.getReviewsByServiceId(serviceId).map { dto ->
+                ReviewModel(
+                    userId = dto.userId.toString(),
+                    rating = dto.rating,
+                    comment = dto.comment,
+                    userName = "Usuario ${dto.userId}" // Fallback o cargar nombre
+                )
+            }
         } catch (e: Exception) {
             emptyList()
         }
     }
 
-    override suspend fun createReview(review: ReviewRequest): ReviewModel {
-        return apiService.createReview(review)
+    override suspend fun createReview(review: ReviewRequestDto): ReviewModel {
+        val resultDto = apiService.createReview(review)
+        return ReviewModel(
+            userId = resultDto.userId.toString(),
+            rating = resultDto.rating,
+            comment = resultDto.comment,
+            userName = "Usuario ${resultDto.userId}"
+        )
     }
 
-    private fun PropertyModel.toDto() = PublicationDto(
+    private fun edu.javeriana.fixup.data.network.model.PropertyDto.toPublicationDto() = PublicationDto(
         id = this.id.toString(),
         title = this.title ?: "Sin título",
         priceText = "Desde $${this.price ?: 0.0}",

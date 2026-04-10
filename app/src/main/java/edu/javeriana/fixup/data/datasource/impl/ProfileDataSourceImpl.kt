@@ -1,10 +1,14 @@
-package edu.javeriana.fixup.data.datasource
+package edu.javeriana.fixup.data.datasource.impl
 
 import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.userProfileChangeRequest
 import com.google.firebase.storage.FirebaseStorage
+import edu.javeriana.fixup.data.datasource.ProfileDataSource
+import edu.javeriana.fixup.data.network.model.ReviewRequestDto
+import edu.javeriana.fixup.data.network.service.FixUpApiService
+import edu.javeriana.fixup.ui.model.ReviewModel
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
@@ -38,33 +42,54 @@ class ProfileDataSourceImpl @Inject constructor(
 
     override fun getCurrentUser(): FirebaseUser? = auth.currentUser
 
-    override suspend fun getReviewsByUserId(userId: String): List<edu.javeriana.fixup.ui.model.ReviewModel> {
+    override suspend fun getReviewsByUserId(userId: String): List<ReviewModel> {
         return try {
-            // Se asume que el backend ya maneja el userId "1" si se pasa como parámetro
-            apiService.getReviewsByUserId(userId)
+            apiService.getReviewsByUserId(userId).map { dto ->
+                ReviewModel(
+                    id = dto.id?.toString() ?: "",
+                    userId = dto.userId.toString(),
+                    rating = dto.rating,
+                    comment = dto.comment,
+                    userName = "Usuario ${dto.userId}"
+                )
+            }
         } catch (e: Exception) {
             emptyList()
         }
     }
 
-    override suspend fun createReview(review: edu.javeriana.fixup.ui.model.ReviewModel): edu.javeriana.fixup.ui.model.ReviewModel {
-        val request = ReviewRequest(
-            userId = review.userId.toIntOrNull() ?: 1,
-            serviceId = 1, // Valor por defecto para asegurar compatibilidad
-            rating = review.rating,
-            comment = review.comment
-        )
-        return apiService.createReview(request)
-    }
-
-    override suspend fun updateReview(id: String, review: edu.javeriana.fixup.ui.model.ReviewModel): edu.javeriana.fixup.ui.model.ReviewModel {
-        val request = ReviewRequest(
+    override suspend fun createReview(review: ReviewModel): ReviewModel {
+        val request = ReviewRequestDto(
             userId = review.userId.toIntOrNull() ?: 1,
             serviceId = 1,
             rating = review.rating,
             comment = review.comment
         )
-        return apiService.updateReview(id, request)
+        val resultDto = apiService.createReview(request)
+        return ReviewModel(
+            id = resultDto.id?.toString() ?: "",
+            userId = resultDto.userId.toString(),
+            rating = resultDto.rating,
+            comment = resultDto.comment,
+            userName = "Usuario ${resultDto.userId}"
+        )
+    }
+
+    override suspend fun updateReview(id: String, review: ReviewModel): ReviewModel {
+        val request = ReviewRequestDto(
+            userId = review.userId.toIntOrNull() ?: 1,
+            serviceId = 1,
+            rating = review.rating,
+            comment = review.comment
+        )
+        val resultDto = apiService.updateReview(id, request)
+        return ReviewModel(
+            id = resultDto.id?.toString() ?: "",
+            userId = resultDto.userId.toString(),
+            rating = resultDto.rating,
+            comment = resultDto.comment,
+            userName = "Usuario ${resultDto.userId}"
+        )
     }
 
     override suspend fun deleteReview(id: String) {

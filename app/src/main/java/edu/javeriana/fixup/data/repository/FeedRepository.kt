@@ -1,10 +1,10 @@
 package edu.javeriana.fixup.data.repository
 
 import android.net.Uri
-import edu.javeriana.fixup.data.datasource.CategoryDto
+import edu.javeriana.fixup.data.network.model.CategoryDto
+import edu.javeriana.fixup.data.network.model.PublicationDto
+import edu.javeriana.fixup.data.network.model.ReviewRequestDto
 import edu.javeriana.fixup.data.datasource.FeedDataSource
-import edu.javeriana.fixup.data.datasource.PublicationDto
-import edu.javeriana.fixup.data.datasource.ReviewRequest
 import edu.javeriana.fixup.ui.features.feed.CategoryItemModel
 import edu.javeriana.fixup.ui.features.feed.PublicationCardModel
 import edu.javeriana.fixup.ui.model.PropertyModel
@@ -59,7 +59,7 @@ class FeedRepository @Inject constructor(
         }
     }
 
-    suspend fun createReview(review: ReviewRequest): Result<ReviewModel> {
+    suspend fun createReview(review: ReviewRequestDto): Result<ReviewModel> {
         return try {
             val created = dataSource.createReview(review)
             Result.success(created)
