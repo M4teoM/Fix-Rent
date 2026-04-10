@@ -3,11 +3,12 @@ package edu.javeriana.fixup.data.datasource.impl
 import android.net.Uri
 import com.google.firebase.storage.FirebaseStorage
 import edu.javeriana.fixup.R
-import edu.javeriana.fixup.data.datasource.FeedDataSource
+import edu.javeriana.fixup.data.datasource.interfaces.FeedDataSource
+import edu.javeriana.fixup.data.mapper.toDomain
+import edu.javeriana.fixup.data.network.api.FixUpApiService
 import edu.javeriana.fixup.data.network.model.CategoryDto
 import edu.javeriana.fixup.data.network.model.PublicationDto
 import edu.javeriana.fixup.data.network.model.ReviewRequestDto
-import edu.javeriana.fixup.data.network.service.FixUpApiService
 import edu.javeriana.fixup.ui.model.PropertyModel
 import edu.javeriana.fixup.ui.model.ReviewModel
 import kotlinx.coroutines.tasks.await
@@ -76,12 +77,7 @@ class FeedDataSourceImpl @Inject constructor(
     override suspend fun getReviewsByServiceId(serviceId: Int): List<ReviewModel> {
         return try {
             apiService.getReviewsByServiceId(serviceId).map { dto ->
-                ReviewModel(
-                    userId = dto.userId.toString(),
-                    rating = dto.rating,
-                    comment = dto.comment,
-                    userName = "Usuario ${dto.userId}" // Fallback o cargar nombre
-                )
+                dto.toDomain()
             }
         } catch (e: Exception) {
             emptyList()
@@ -89,13 +85,7 @@ class FeedDataSourceImpl @Inject constructor(
     }
 
     override suspend fun createReview(review: ReviewRequestDto): ReviewModel {
-        val resultDto = apiService.createReview(review)
-        return ReviewModel(
-            userId = resultDto.userId.toString(),
-            rating = resultDto.rating,
-            comment = resultDto.comment,
-            userName = "Usuario ${resultDto.userId}"
-        )
+        return apiService.createReview(review).toDomain()
     }
 
     private fun edu.javeriana.fixup.data.network.model.PropertyDto.toPublicationDto() = PublicationDto(

@@ -2,8 +2,8 @@ package edu.javeriana.fixup.data.datasource.impl
 
 import android.net.Uri
 import com.google.firebase.storage.FirebaseStorage
-import edu.javeriana.fixup.data.datasource.RentDataSource
-import edu.javeriana.fixup.data.network.service.FixUpApiService
+import edu.javeriana.fixup.data.datasource.interfaces.RentDataSource
+import edu.javeriana.fixup.data.network.api.FixUpApiService
 import edu.javeriana.fixup.ui.model.PropertyModel
 import javax.inject.Inject
 
