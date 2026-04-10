@@ -1,6 +1,6 @@
 package edu.javeriana.fixup.data.repository
 
-import edu.javeriana.fixup.data.datasource.ChatDataSource
+import edu.javeriana.fixup.data.datasource.interfaces.ChatDataSource
 import edu.javeriana.fixup.ui.features.chat.MessageModel
 import javax.inject.Inject
 

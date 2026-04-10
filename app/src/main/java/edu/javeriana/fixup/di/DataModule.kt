@@ -4,7 +4,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import edu.javeriana.fixup.data.datasource.*
+import edu.javeriana.fixup.data.datasource.interfaces.*
 import edu.javeriana.fixup.data.datasource.impl.*
 
 @Module
