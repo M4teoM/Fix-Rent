@@ -3,7 +3,7 @@ package edu.javeriana.fixup.ui.features.publication_detail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import edu.javeriana.fixup.data.network.model.ReviewRequestDto
+import edu.javeriana.fixup.data.network.dto.ReviewRequestDto
 import edu.javeriana.fixup.data.repository.FeedRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -69,8 +69,8 @@ class PublicationDetailViewModel @Inject constructor(
         viewModelScope.launch {
             // Simulamos un userId por ahora (en una app real vendría de la sesión)
             val request = ReviewRequestDto(
-                userId = 1, 
-                serviceId = serviceId,
+                userId = "1", 
+                serviceId = serviceId.toString(),
                 rating = rating,
                 comment = comment
             )

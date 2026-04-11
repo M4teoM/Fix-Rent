@@ -1,9 +1,9 @@
 package edu.javeriana.fixup.data.datasource.interfaces
 
 import android.net.Uri
-import edu.javeriana.fixup.data.network.model.CategoryDto
-import edu.javeriana.fixup.data.network.model.PublicationDto
-import edu.javeriana.fixup.data.network.model.ReviewRequestDto
+import edu.javeriana.fixup.data.network.dto.CategoryDto
+import edu.javeriana.fixup.data.network.dto.PublicationDto
+import edu.javeriana.fixup.data.network.dto.ReviewRequestDto
 import edu.javeriana.fixup.ui.model.PropertyModel
 import edu.javeriana.fixup.ui.model.ReviewModel
 

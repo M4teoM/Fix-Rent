@@ -2,7 +2,7 @@ package edu.javeriana.fixup.data.repository
 
 import android.net.Uri
 import com.google.firebase.auth.FirebaseUser
-import edu.javeriana.fixup.data.datasource.ProfileDataSource
+import edu.javeriana.fixup.data.datasource.interfaces.ProfileDataSource
 import edu.javeriana.fixup.data.util.toAppError
 import javax.inject.Inject
 

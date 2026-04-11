@@ -2,9 +2,9 @@ package edu.javeriana.fixup.data.network.api
 
 import edu.javeriana.fixup.data.network.dto.ReviewDto
 import edu.javeriana.fixup.data.network.dto.UserDto
-import edu.javeriana.fixup.data.network.model.PropertyDto
-import edu.javeriana.fixup.data.network.model.ReviewRequestDto
-import edu.javeriana.fixup.data.network.model.ServiceDto
+import edu.javeriana.fixup.data.network.dto.PropertyDto
+import edu.javeriana.fixup.data.network.dto.ReviewRequestDto
+import edu.javeriana.fixup.data.network.dto.ServiceDto
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET

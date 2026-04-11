@@ -5,9 +5,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.userProfileChangeRequest
 import com.google.firebase.storage.FirebaseStorage
-import edu.javeriana.fixup.data.datasource.ProfileDataSource
-import edu.javeriana.fixup.data.network.model.ReviewRequestDto
-import edu.javeriana.fixup.data.network.service.FixUpApiService
+import edu.javeriana.fixup.data.datasource.interfaces.ProfileDataSource
+import edu.javeriana.fixup.data.network.dto.ReviewRequestDto
+import edu.javeriana.fixup.data.network.api.FixUpApiService
 import edu.javeriana.fixup.ui.model.ReviewModel
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
@@ -47,10 +47,10 @@ class ProfileDataSourceImpl @Inject constructor(
             apiService.getReviewsByUserId(userId).map { dto ->
                 ReviewModel(
                     id = dto.id?.toString() ?: "",
-                    userId = dto.userId.toString(),
-                    rating = dto.rating,
-                    comment = dto.comment,
-                    userName = "Usuario ${dto.userId}"
+                    userId = dto.userId?.toString() ?: "",
+                    rating = dto.rating?.toInt() ?: 0,
+                    comment = dto.comment ?: "",
+                    userName = dto.userName ?: "Usuario ${dto.userId}"
                 )
             }
         } catch (e: Exception) {
@@ -60,35 +60,35 @@ class ProfileDataSourceImpl @Inject constructor(
 
     override suspend fun createReview(review: ReviewModel): ReviewModel {
         val request = ReviewRequestDto(
-            userId = review.userId.toIntOrNull() ?: 1,
-            serviceId = 1,
+            userId = review.userId,
+            serviceId = "1", // Hardcoded for now as per previous version
             rating = review.rating,
             comment = review.comment
         )
         val resultDto = apiService.createReview(request)
         return ReviewModel(
             id = resultDto.id?.toString() ?: "",
-            userId = resultDto.userId.toString(),
-            rating = resultDto.rating,
-            comment = resultDto.comment,
-            userName = "Usuario ${resultDto.userId}"
+            userId = resultDto.userId?.toString() ?: "",
+            rating = resultDto.rating?.toInt() ?: 0,
+            comment = resultDto.comment ?: "",
+            userName = resultDto.userName ?: "Usuario ${resultDto.userId}"
         )
     }
 
     override suspend fun updateReview(id: String, review: ReviewModel): ReviewModel {
         val request = ReviewRequestDto(
-            userId = review.userId.toIntOrNull() ?: 1,
-            serviceId = 1,
+            userId = review.userId,
+            serviceId = "1",
             rating = review.rating,
             comment = review.comment
         )
         val resultDto = apiService.updateReview(id, request)
         return ReviewModel(
             id = resultDto.id?.toString() ?: "",
-            userId = resultDto.userId.toString(),
-            rating = resultDto.rating,
-            comment = resultDto.comment,
-            userName = "Usuario ${resultDto.userId}"
+            userId = resultDto.userId?.toString() ?: "",
+            rating = resultDto.rating?.toInt() ?: 0,
+            comment = resultDto.comment ?: "",
+            userName = resultDto.userName ?: "Usuario ${resultDto.userId}"
         )
     }
 

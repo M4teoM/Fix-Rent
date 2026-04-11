@@ -3,11 +3,12 @@ package edu.javeriana.fixup.data.datasource.impl
 import android.net.Uri
 import com.google.firebase.storage.FirebaseStorage
 import edu.javeriana.fixup.R
-import edu.javeriana.fixup.data.datasource.FeedDataSource
-import edu.javeriana.fixup.data.network.model.CategoryDto
-import edu.javeriana.fixup.data.network.model.PublicationDto
-import edu.javeriana.fixup.data.network.model.ReviewRequestDto
-import edu.javeriana.fixup.data.network.service.FixUpApiService
+import edu.javeriana.fixup.data.datasource.interfaces.FeedDataSource
+import edu.javeriana.fixup.data.network.dto.CategoryDto
+import edu.javeriana.fixup.data.network.dto.PublicationDto
+import edu.javeriana.fixup.data.network.dto.ReviewRequestDto
+import edu.javeriana.fixup.data.network.dto.ServiceDto
+import edu.javeriana.fixup.data.network.api.FixUpApiService
 import edu.javeriana.fixup.ui.model.PropertyModel
 import edu.javeriana.fixup.ui.model.ReviewModel
 import kotlinx.coroutines.tasks.await
@@ -53,22 +54,22 @@ class FeedDataSourceImpl @Inject constructor(
         // 3. Crear el objeto con la URL de la imagen y enviarlo a la API
         val publicationWithImage = property.copy(imageUrl = downloadUrl)
         
-        val dto = edu.javeriana.fixup.data.network.model.PropertyDto(
+        val dto = ServiceDto(
             id = publicationWithImage.id,
-            title = publicationWithImage.title,
+            name = publicationWithImage.title,
             description = publicationWithImage.description,
             price = publicationWithImage.price,
-            location = publicationWithImage.location,
+            category = publicationWithImage.location,
             imageUrl = publicationWithImage.imageUrl
         )
         
         val resultDto = apiService.createService(dto)
         return PropertyModel(
             id = resultDto.id,
-            title = resultDto.title,
+            title = resultDto.name,
             description = resultDto.description,
             price = resultDto.price,
-            location = resultDto.location,
+            location = resultDto.category,
             imageUrl = resultDto.imageUrl
         )
     }
@@ -78,12 +79,13 @@ class FeedDataSourceImpl @Inject constructor(
             apiService.getReviewsByServiceId(serviceId).map { dto ->
                 ReviewModel(
                     userId = dto.userId.toString(),
-                    rating = dto.rating,
-                    comment = dto.comment,
-                    userName = "Usuario ${dto.userId}" // Fallback o cargar nombre
+                    rating = dto.rating?.toInt() ?: 0,
+                    comment = dto.comment ?: "",
+                    userName = dto.userName ?: "Usuario ${dto.userId}"
                 )
             }
         } catch (e: Exception) {
+            android.util.Log.e("FeedDataSource", "Error fetching reviews", e)
             emptyList()
         }
     }
@@ -92,18 +94,19 @@ class FeedDataSourceImpl @Inject constructor(
         val resultDto = apiService.createReview(review)
         return ReviewModel(
             userId = resultDto.userId.toString(),
-            rating = resultDto.rating,
-            comment = resultDto.comment,
-            userName = "Usuario ${resultDto.userId}"
+            rating = resultDto.rating?.toInt() ?: 0,
+            comment = resultDto.comment ?: "",
+            userName = resultDto.userName ?: "Usuario ${resultDto.userId}"
         )
     }
 
-    private fun edu.javeriana.fixup.data.network.model.PropertyDto.toPublicationDto() = PublicationDto(
+    // Also handle ServiceDto to PublicationDto if needed, as getServices returns ServiceDto
+    private fun ServiceDto.toPublicationDto() = PublicationDto(
         id = this.id.toString(),
-        title = this.title ?: "Sin título",
+        title = this.name ?: "Sin título",
         priceText = "Desde $${this.price ?: 0.0}",
         description = this.description,
-        location = this.location,
+        location = this.category ?: "",
         imageUrl = this.imageUrl
     )
 }

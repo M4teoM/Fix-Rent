@@ -16,3 +16,14 @@ data class ReviewDto(
     @SerializedName("created_at")
     val createdAt: String?
 )
+
+data class ReviewRequestDto(
+    @SerializedName("user_id")
+    val userId: String,
+    @SerializedName("service_id")
+    val serviceId: String,
+    @SerializedName("rating")
+    val rating: Int,
+    @SerializedName("comment")
+    val comment: String
+)

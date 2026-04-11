@@ -1,9 +1,9 @@
 package edu.javeriana.fixup.data.repository
 
 import android.net.Uri
-import edu.javeriana.fixup.data.datasource.RentDataSource
-import edu.javeriana.fixup.data.network.model.ReviewRequestDto
-import edu.javeriana.fixup.data.network.service.FixUpApiService
+import edu.javeriana.fixup.data.datasource.interfaces.RentDataSource
+import edu.javeriana.fixup.data.network.dto.ReviewRequestDto
+import edu.javeriana.fixup.data.network.api.FixUpApiService
 import edu.javeriana.fixup.data.util.AppConstants
 import edu.javeriana.fixup.ui.model.PropertyModel
 import edu.javeriana.fixup.ui.model.ReviewModel
@@ -36,11 +36,11 @@ class RentRepository @Inject constructor(
             val reviewDtos = apiService.getReviewsByServiceId(serviceId)
             val reviews = reviewDtos.map { dto ->
                 ReviewModel(
-                    id = dto.id?.toString() ?: "",
-                    userId = dto.userId.toString(),
-                    rating = dto.rating,
-                    comment = dto.comment,
-                    userName = "Usuario ${dto.userId}"
+                    id = dto.id ?: "",
+                    userId = dto.userId ?: "",
+                    rating = dto.rating?.toInt() ?: 0,
+                    comment = dto.comment ?: "",
+                    userName = dto.userName ?: "Usuario ${dto.userId}"
                 )
             }
             Result.success(reviews)
@@ -52,18 +52,18 @@ class RentRepository @Inject constructor(
     suspend fun createReview(serviceId: Int, rating: Int, comment: String): Result<ReviewModel> {
         return try {
             val request = ReviewRequestDto(
-                userId = AppConstants.CURRENT_USER_ID_INT,
-                serviceId = serviceId,
+                userId = AppConstants.CURRENT_USER_ID,
+                serviceId = serviceId.toString(),
                 rating = rating,
                 comment = comment
             )
             val resultDto = apiService.createReview(request)
             val savedReview = ReviewModel(
-                id = resultDto.id?.toString() ?: "",
-                userId = resultDto.userId.toString(),
-                rating = resultDto.rating,
-                comment = resultDto.comment,
-                userName = "Usuario ${resultDto.userId}"
+                id = resultDto.id ?: "",
+                userId = resultDto.userId ?: "",
+                rating = resultDto.rating?.toInt() ?: 0,
+                comment = resultDto.comment ?: "",
+                userName = resultDto.userName ?: "Usuario ${resultDto.userId}"
             )
             Result.success(savedReview)
         } catch (e: Exception) {

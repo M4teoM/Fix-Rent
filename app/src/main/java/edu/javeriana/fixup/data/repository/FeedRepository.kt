@@ -1,10 +1,10 @@
 package edu.javeriana.fixup.data.repository
 
 import android.net.Uri
-import edu.javeriana.fixup.data.network.model.CategoryDto
-import edu.javeriana.fixup.data.network.model.PublicationDto
-import edu.javeriana.fixup.data.network.model.ReviewRequestDto
-import edu.javeriana.fixup.data.datasource.FeedDataSource
+import edu.javeriana.fixup.data.network.dto.CategoryDto
+import edu.javeriana.fixup.data.network.dto.PublicationDto
+import edu.javeriana.fixup.data.network.dto.ReviewRequestDto
+import edu.javeriana.fixup.data.datasource.interfaces.FeedDataSource
 import edu.javeriana.fixup.ui.features.feed.CategoryItemModel
 import edu.javeriana.fixup.ui.features.feed.PublicationCardModel
 import edu.javeriana.fixup.ui.model.PropertyModel

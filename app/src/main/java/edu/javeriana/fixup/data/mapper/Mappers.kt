@@ -2,7 +2,7 @@ package edu.javeriana.fixup.data.mapper
 
 import edu.javeriana.fixup.data.network.dto.ReviewDto
 import edu.javeriana.fixup.data.network.dto.UserDto
-import edu.javeriana.fixup.data.network.model.ServiceDto
+import edu.javeriana.fixup.data.network.dto.ServiceDto
 import edu.javeriana.fixup.ui.model.ReviewModel
 import edu.javeriana.fixup.ui.model.ServiceModel
 import edu.javeriana.fixup.ui.model.UserModel
