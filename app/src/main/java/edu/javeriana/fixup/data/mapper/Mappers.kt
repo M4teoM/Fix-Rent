@@ -12,15 +12,24 @@ fun ReviewDto.toDomain(): ReviewModel {
      * Convierte un DTO de reseña a un modelo de dominio.
      * Esta decisión arquitectónica (Mapper) permite que los cambios en la API (como nuevos campos)
      * no afecten directamente a la lógica de la UI, manteniendo el desacoplamiento.
+     *
+     * Responsabilidad:
+     * - ReviewDto: Objeto de Transferencia de Datos que refleja exactamente la estructura JSON del backend.
+     * - ReviewModel: Modelo de Dominio optimizado para ser consumido por la UI de Android.
+     *
+     * Se priorizan los datos anidados del objeto "User" (Sequelize) si están disponibles.
      */
+    val finalUserName = user?.name ?: userName ?: "Usuario anónimo"
+    val finalProfileImage = user?.profileImageUrl ?: userProfileImage ?: ""
+
     return ReviewModel(
         id = id ?: "",
         userId = userId ?: "",
-        userName = userName ?: "Usuario anónimo",
+        userName = finalUserName,
         articleName = articleName ?: "",
         rating = rating?.toInt() ?: 0,
         comment = comment ?: "",
-        userProfileImage = userProfileImage ?: "", // Mapeo de la nueva URL de imagen de perfil
+        userProfileImage = finalProfileImage,
         date = createdAt ?: ""
     )
 }

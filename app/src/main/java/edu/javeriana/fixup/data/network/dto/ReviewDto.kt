@@ -18,7 +18,9 @@ data class ReviewDto(
     @SerializedName("user_profile_image")
     val userProfileImage: String?,
     @SerializedName("created_at")
-    val createdAt: String?
+    val createdAt: String?,
+    @SerializedName("User")
+    val user: UserDto? = null
 )
 
 data class ReviewRequestDto(
