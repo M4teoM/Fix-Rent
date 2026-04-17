@@ -2,7 +2,6 @@ package edu.javeriana.fixup.data.datasource.impl
 
 
 import android.net.Uri
-import android.provider.Settings.Global.getString
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.DocumentSnapshot
@@ -15,7 +14,6 @@ import edu.javeriana.fixup.data.network.dto.ReviewRequestDto
 import edu.javeriana.fixup.ui.model.PropertyModel
 import edu.javeriana.fixup.ui.model.ReviewModel
 import kotlinx.coroutines.tasks.await
-import java.lang.reflect.Array.getDouble
 import java.util.UUID
 import javax.inject.Inject
 
@@ -64,16 +62,11 @@ class FeedFirestoreDataSourceImpl @Inject constructor(
     }
 
     override suspend fun getReviewsByServiceId(serviceId: Int): List<ReviewModel> {
-        val currentUser = auth.currentUser
-        var query = firestore.collection("reviews")
+        val snapshot = firestore.collection("reviews")
             .whereEqualTo("serviceId", serviceId.toString())
-        
-        // Filtramos para que cada usuario vea solo sus comentarios
-        if (currentUser != null) {
-            query = query.whereEqualTo("userId", currentUser.uid)
-        }
+            .get()
+            .await()
 
-        val snapshot = query.get().await()
         return snapshot.documents.mapNotNull { doc ->
             ReviewModel(
                 userId = doc.getString("userId") ?: "",
