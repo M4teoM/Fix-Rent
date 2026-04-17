@@ -48,8 +48,7 @@ class RegisterViewModel @Inject constructor(
      * Inicia el proceso de registro.
      * 1. Registra al usuario en Firebase Authentication.
      * 2. Si es exitoso, sincroniza los datos con el Backend en Render.
-     * 
-     * Este enfoque garantiza que solo los usuarios autenticados existan en la DB relacional.
+     * * Este enfoque garantiza que solo los usuarios autenticados existan en la DB relacional.
      */
     fun signUp(onSuccess: () -> Unit) {
         val email = _uiState.value.email.trim()
@@ -73,7 +72,10 @@ class RegisterViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, error = null) }
             
             // PASO 1: Registro en Firebase
-            val authResult = authRepository.signUp(email, password)
+            val authResult = authRepository.signUp(
+                email = email,
+                password = password
+            )
             
             authResult.onSuccess { firebaseUser ->
                 // PASO 2: Sincronización con el Backend (PostgreSQL)
@@ -94,9 +96,7 @@ class RegisterViewModel @Inject constructor(
                     _uiState.update { it.copy(isLoading = false) }
                     onSuccess()
                 }.onFailure { e ->
-                    // Si el backend falla, debemos informar al usuario. 
-                    // Nota: En una app de producción, se podría considerar un mecanismo de reintento
-                    // o rollback de Firebase si la integridad es crítica.
+                    // Si el backend falla, informamos al usuario. 
                     _uiState.update { 
                         it.copy(
                             isLoading = false, 

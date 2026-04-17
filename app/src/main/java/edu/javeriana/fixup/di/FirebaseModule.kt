@@ -16,6 +16,9 @@ object FirebaseModule {
     fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
 
     @Provides
+    fun provideFirebaseFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
+
+    @Provides
     fun provideFirebaseStorage(): FirebaseStorage = FirebaseStorage.getInstance()
 
 
