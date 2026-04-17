@@ -268,11 +268,21 @@ fun ReviewItem(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = review.authorName,
-                    fontWeight = FontWeight.Bold,
-                    color = SoftFawn
-                )
+                Column {
+                    Text(
+                        text = review.authorName,
+                        fontWeight = FontWeight.Bold,
+                        color = SoftFawn
+                    )
+                    if (review.serviceTitle.isNotEmpty()) {
+                        Text(
+                            text = "Servicio: ${review.serviceTitle}",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     repeat(5) { index ->
                         Icon(

@@ -2,6 +2,8 @@ package edu.javeriana.fixup.data.datasource.impl
 
 
 import android.net.Uri
+import android.provider.Settings.Global.getString
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.storage.FirebaseStorage
@@ -13,12 +15,14 @@ import edu.javeriana.fixup.data.network.dto.ReviewRequestDto
 import edu.javeriana.fixup.ui.model.PropertyModel
 import edu.javeriana.fixup.ui.model.ReviewModel
 import kotlinx.coroutines.tasks.await
+import java.lang.reflect.Array.getDouble
 import java.util.UUID
 import javax.inject.Inject
 
 class FeedFirestoreDataSourceImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val storage: FirebaseStorage
+    private val storage: FirebaseStorage,
+    private val auth: FirebaseAuth
 ) : FeedDataSource {
 
     override suspend fun getCategories(): List<CategoryDto> {
@@ -60,27 +64,41 @@ class FeedFirestoreDataSourceImpl @Inject constructor(
     }
 
     override suspend fun getReviewsByServiceId(serviceId: Int): List<ReviewModel> {
-        val snapshot = firestore.collection("reviews")
+        val currentUser = auth.currentUser
+        var query = firestore.collection("reviews")
             .whereEqualTo("serviceId", serviceId.toString())
-            .get().await()
+        
+        // Filtramos para que cada usuario vea solo sus comentarios
+        if (currentUser != null) {
+            query = query.whereEqualTo("userId", currentUser.uid)
+        }
+
+        val snapshot = query.get().await()
         return snapshot.documents.mapNotNull { doc ->
             ReviewModel(
                 userId = doc.getString("userId") ?: "",
                 rating = (doc.getLong("rating") ?: 0L).toInt(),
                 comment = doc.getString("comment") ?: "",
-                userName = doc.getString("userName") ?: "Usuario"
+                userName = doc.getString("authorName") ?: "Usuario",
+                authorName = doc.getString("authorName") ?: "Usuario",
+                authorProfileImageUrl = doc.getString("authorProfileImageUrl") ?: ""
             )
         }
     }
 
     override suspend fun createReview(review: ReviewRequestDto): ReviewModel {
+        val currentUser = auth.currentUser
+        val authorName = currentUser?.displayName ?: "Usuario"
+        val authorProfileImageUrl = currentUser?.photoUrl?.toString() ?: ""
+
         val docRef = firestore.collection("reviews").document()
         val data = mapOf(
             "userId" to review.userId,
             "serviceId" to review.serviceId,
             "rating" to review.rating,
             "comment" to review.comment,
-            "userName" to "Usuario",
+            "authorName" to authorName,
+            "authorProfileImageUrl" to authorProfileImageUrl,
             "createdAt" to com.google.firebase.Timestamp.now()
         )
         docRef.set(data).await()
@@ -88,7 +106,9 @@ class FeedFirestoreDataSourceImpl @Inject constructor(
             userId = review.userId,
             rating = review.rating,
             comment = review.comment,
-            userName = "Usuario"
+            userName = authorName,
+            authorName = authorName,
+            authorProfileImageUrl = authorProfileImageUrl
         )
     }
 
