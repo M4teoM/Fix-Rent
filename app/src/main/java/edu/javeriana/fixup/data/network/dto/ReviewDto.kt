@@ -4,56 +4,56 @@ import com.google.gson.annotations.SerializedName
 
 data class ReviewDto(
     @SerializedName("id")
-    val id: String?,
+    val id: String? = "",
     @SerializedName("rating")
-    val rating: Int?,
+    val rating: Int? = 0,
     @SerializedName("comment")
-    val comment: String?,
+    val comment: String? = "",
     @SerializedName("date")
-    val date: String?,
+    val date: String? = "",
     @SerializedName("authorName")
-    val authorName: String?,
+    val authorName: String? = "",
     @SerializedName("authorProfileImageUrl")
-    val authorProfileImageUrl: String?,
+    val authorProfileImageUrl: String? = "",
     @SerializedName("user")
-    val user: ReviewUserDto?,
+    val user: ReviewUserDto? = ReviewUserDto(),
     @SerializedName("service")
-    val service: ReviewServiceDto?,
+    val service: ReviewServiceDto? = ReviewServiceDto(),
     @SerializedName("articleId")
-    val articleId: String? = null,
+    val articleId: String? = "",
     @SerializedName("articleName")
-    val articleName: String? = null,
+    val articleName: String? = "",
     @SerializedName("userId")
-    val userId: String? = null,
+    val userId: String? = "",
     @SerializedName("likedBy")
     val likedBy: List<String>? = emptyList()
 )
 
 data class ReviewUserDto(
     @SerializedName("id")
-    val id: String?,
+    val id: String? = "",
     @SerializedName("name")
-    val name: String?,
+    val name: String? = "",
     @SerializedName("profileImage")
-    val profileImage: String?
+    val profileImage: String? = ""
 )
 
 data class ReviewServiceDto(
     @SerializedName("id")
-    val id: Int?,
+    val id: Int? = 0,
     @SerializedName("title")
-    val title: String?,
+    val title: String? = "",
     @SerializedName("categoria")
-    val categoria: String?
+    val categoria: String? = ""
 )
 
 data class ReviewRequestDto(
     @SerializedName("user_id")
-    val userId: String,
+    val userId: String = "",
     @SerializedName("service_id")
-    val serviceId: String,
+    val serviceId: String = "",
     @SerializedName("rating")
-    val rating: Int,
+    val rating: Int = 0,
     @SerializedName("comment")
-    val comment: String
+    val comment: String = ""
 )

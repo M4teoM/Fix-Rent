@@ -79,10 +79,12 @@ fun UserProfileScreen(
                 contentPadding = PaddingValues(bottom = 24.dp)
             ) {
                 item {
+                    val currentUserId = viewModel.getCurrentUserId()
                     UserHeader(
-                        name = uiState.user?.name ?: "Usuario",
-                        role = uiState.user?.role ?: "",
-                        imageUrl = uiState.user?.profileImageUrl
+                        user = uiState.user,
+                        isCurrentUser = currentUserId != null && currentUserId == uiState.user?.id,
+                        isFollowing = currentUserId != null && uiState.user?.followers?.contains(currentUserId) == true,
+                        onFollowClick = { viewModel.toggleFollow() }
                     )
                 }
 
@@ -120,10 +122,13 @@ fun UserProfileScreen(
 
 @Composable
 private fun UserHeader(
-    name: String,
-    role: String,
-    imageUrl: String?
+    user: edu.javeriana.fixup.ui.model.UserModel?,
+    isCurrentUser: Boolean,
+    isFollowing: Boolean,
+    onFollowClick: () -> Unit
 ) {
+    if (user == null) return
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -131,32 +136,62 @@ private fun UserHeader(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(imageUrl ?: R.drawable.profile_photo)
-                .crossfade(true)
-                .build(),
+            model = user.profileImageUrl?.takeIf { it.isNotBlank() },
             contentDescription = "Foto de perfil",
+            placeholder = painterResource(id = R.drawable.profile_photo),
+            error = painterResource(id = R.drawable.profile_photo),
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(120.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop,
-            error = painterResource(R.drawable.profile_photo)
+                .clip(CircleShape)
         )
         
         Spacer(modifier = Modifier.height(16.dp))
         
         Text(
-            text = name,
+            text = user.name,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = SoftFawn
         )
         
         Text(
-            text = role,
+            text = user.role,
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = user.followers.size.toString(), fontWeight = FontWeight.Bold)
+                Text(text = "Seguidores", fontSize = 12.sp)
+            }
+            Spacer(modifier = Modifier.width(32.dp))
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = user.following.size.toString(), fontWeight = FontWeight.Bold)
+                Text(text = "Seguidos", fontSize = 12.sp)
+            }
+        }
+
+        if (!isCurrentUser) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = onFollowClick,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isFollowing) MaterialTheme.colorScheme.surfaceVariant else SoftFawn,
+                    contentColor = if (isFollowing) MaterialTheme.colorScheme.onSurfaceVariant else Color.White
+                ),
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.padding(horizontal = 32.dp).fillMaxWidth()
+            ) {
+                Text(text = if (isFollowing) "Dejar de seguir" else "Seguir")
+            }
+        }
     }
 }
 

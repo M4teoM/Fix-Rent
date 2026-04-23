@@ -44,7 +44,9 @@ fun UserDto.toDomain(): UserModel {
         phone = phone ?: "",
         address = address ?: "",
         role = role ?: "",
-        profileImageUrl = profileImageUrl
+        profileImageUrl = profileImageUrl,
+        followers = followers ?: emptyList(),
+        following = following ?: emptyList()
     )
 }
 

@@ -22,4 +22,13 @@ class UserRepository @Inject constructor(
             emit(Result.failure(e))
         }
     }
+
+    suspend fun toggleFollow(currentUserId: String, targetUserId: String, isFollowing: Boolean): Result<Unit> {
+        return try {
+            userDataSource.toggleFollowUser(currentUserId, targetUserId, isFollowing)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
