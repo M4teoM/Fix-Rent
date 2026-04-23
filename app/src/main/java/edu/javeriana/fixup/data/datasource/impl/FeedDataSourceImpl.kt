@@ -78,7 +78,7 @@ class FeedDataSourceImpl @Inject constructor(
         return try {
             apiService.getReviewsByServiceId(serviceId).map { dto ->
                 ReviewModel(
-                    id = dto.id ?: 0,
+                    id = dto.id?.toIntOrNull() ?: 0,
                     rating = dto.rating ?: 0,
                     comment = dto.comment ?: "",
                     date = dto.date ?: "",
@@ -96,7 +96,7 @@ class FeedDataSourceImpl @Inject constructor(
     override suspend fun createReview(review: ReviewRequestDto): ReviewModel {
         val resultDto = apiService.createReview(review)
         return ReviewModel(
-            id = resultDto.id ?: 0,
+            id = resultDto.id?.toIntOrNull() ?: 0,
             rating = resultDto.rating ?: 0,
             comment = resultDto.comment ?: "",
             date = resultDto.date ?: "",

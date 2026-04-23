@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class ReviewDto(
     @SerializedName("id")
-    val id: Int?,
+    val id: String?,
     @SerializedName("rating")
     val rating: Int?,
     @SerializedName("comment")
@@ -18,7 +18,13 @@ data class ReviewDto(
     @SerializedName("user")
     val user: ReviewUserDto?,
     @SerializedName("service")
-    val service: ReviewServiceDto?
+    val service: ReviewServiceDto?,
+    @SerializedName("articleId")
+    val articleId: String? = null,
+    @SerializedName("articleName")
+    val articleName: String? = null,
+    @SerializedName("userId")
+    val userId: String? = null
 )
 
 data class ReviewUserDto(

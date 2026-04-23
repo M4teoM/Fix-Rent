@@ -18,6 +18,21 @@ interface DataModule {
     ): AuthDataSource
 
     @Binds
+    fun bindUserDataSource(
+        userDataSourceImpl: UserDataSourceImpl
+    ): UserDataSource
+
+    @Binds
+    fun bindReviewDataSource(
+        reviewDataSourceImpl: ReviewDataSourceImpl
+    ): ReviewDataSource
+
+    @Binds
+    fun bindArticleDataSource(
+        articleDataSourceImpl: ArticleDataSourceImpl
+    ): ArticleDataSource
+
+    @Binds
     fun bindFeedDataSource(
         feedDataSourceImpl: FeedFirestoreDataSourceImpl
     ): FeedDataSource
