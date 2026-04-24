@@ -21,6 +21,19 @@ class UserDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun getUsersByIds(userIds: List<String>): List<UserDto> {
+        if (userIds.isEmpty()) return emptyList()
+
+        return userIds.mapNotNull { userId ->
+            val document = firestore.collection("users").document(userId).get().await()
+            if (document.exists()) {
+                document.toObject(UserDto::class.java)?.copy(id = document.id)
+            } else {
+                null
+            }
+        }
+    }
+
     override suspend fun toggleFollowUser(currentUserId: String, targetUserId: String, isFollowing: Boolean) {
         val batch = firestore.batch()
         

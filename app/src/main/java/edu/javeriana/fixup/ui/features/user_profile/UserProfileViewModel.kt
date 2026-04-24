@@ -49,6 +49,32 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
+    fun loadFollowersUsers() {
+        val targetUser = _uiState.value.user ?: return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isFollowListLoading = true) }
+            userRepository.getUsersByIds(targetUser.followers).onSuccess { users ->
+                _uiState.update { it.copy(followersUsers = users, isFollowListLoading = false) }
+            }.onFailure { error ->
+                _uiState.update { it.copy(isFollowListLoading = false, error = error.message) }
+            }
+        }
+    }
+
+    fun loadFollowingUsers() {
+        val targetUser = _uiState.value.user ?: return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isFollowListLoading = true) }
+            userRepository.getUsersByIds(targetUser.following).onSuccess { users ->
+                _uiState.update { it.copy(followingUsers = users, isFollowListLoading = false) }
+            }.onFailure { error ->
+                _uiState.update { it.copy(isFollowListLoading = false, error = error.message) }
+            }
+        }
+    }
+
     fun toggleLikeReview(reviewId: String) {
         val userId = getCurrentUserId() ?: return
         val review = _uiState.value.reviews.find { it.id == reviewId } ?: return

@@ -25,6 +25,15 @@ class UserRepository @Inject constructor(
         }
     }
 
+    suspend fun getUsersByIds(userIds: List<String>): Result<List<UserModel>> {
+        return try {
+            val users = userDataSource.getUsersByIds(userIds).map { it.toDomain() }
+            Result.success(users)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     suspend fun toggleFollow(currentUserId: String, targetUserId: String, isFollowing: Boolean): Result<Unit> {
         return try {
             userDataSource.toggleFollowUser(currentUserId, targetUserId, isFollowing)

@@ -1,6 +1,5 @@
 package edu.javeriana.fixup.ui.features.user_profile
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,16 +19,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import edu.javeriana.fixup.R
 import edu.javeriana.fixup.ui.model.ReviewModel
+import edu.javeriana.fixup.ui.model.UserModel
 import edu.javeriana.fixup.ui.theme.SoftFawn
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,9 +39,19 @@ fun UserProfileScreen(
     viewModel: UserProfileViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var followDialogType by remember { mutableStateOf<FollowDialogType?>(null) }
 
     LaunchedEffect(userId) {
         viewModel.loadUserProfile(userId)
+    }
+
+    followDialogType?.let { dialogType ->
+        FollowUsersDialog(
+            title = if (dialogType == FollowDialogType.FOLLOWERS) "Seguidores" else "Seguidos",
+            users = if (dialogType == FollowDialogType.FOLLOWERS) uiState.followersUsers else uiState.followingUsers,
+            isLoading = uiState.isFollowListLoading,
+            onDismiss = { followDialogType = null }
+        )
     }
 
     Scaffold(
@@ -84,7 +92,15 @@ fun UserProfileScreen(
                         user = uiState.user,
                         isCurrentUser = currentUserId != null && currentUserId == uiState.user?.id,
                         isFollowing = currentUserId != null && uiState.user?.followers?.contains(currentUserId) == true,
-                        onFollowClick = { viewModel.toggleFollow() }
+                        onFollowClick = { viewModel.toggleFollow() },
+                        onFollowersClick = {
+                            followDialogType = FollowDialogType.FOLLOWERS
+                            viewModel.loadFollowersUsers()
+                        },
+                        onFollowingClick = {
+                            followDialogType = FollowDialogType.FOLLOWING
+                            viewModel.loadFollowingUsers()
+                        }
                     )
                 }
 
@@ -120,12 +136,19 @@ fun UserProfileScreen(
     }
 }
 
+private enum class FollowDialogType {
+    FOLLOWERS,
+    FOLLOWING
+}
+
 @Composable
 private fun UserHeader(
-    user: edu.javeriana.fixup.ui.model.UserModel?,
+    user: UserModel?,
     isCurrentUser: Boolean,
     isFollowing: Boolean,
-    onFollowClick: () -> Unit
+    onFollowClick: () -> Unit,
+    onFollowersClick: () -> Unit,
+    onFollowingClick: () -> Unit
 ) {
     if (user == null) return
 
@@ -145,16 +168,16 @@ private fun UserHeader(
                 .size(120.dp)
                 .clip(CircleShape)
         )
-        
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         Text(
             text = user.name,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = SoftFawn
         )
-        
+
         Text(
             text = user.role,
             fontSize = 14.sp,
@@ -167,12 +190,18 @@ private fun UserHeader(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.clickable { onFollowersClick() }
+            ) {
                 Text(text = user.followers.size.toString(), fontWeight = FontWeight.Bold)
                 Text(text = "Seguidores", fontSize = 12.sp)
             }
             Spacer(modifier = Modifier.width(32.dp))
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.clickable { onFollowingClick() }
+            ) {
                 Text(text = user.following.size.toString(), fontWeight = FontWeight.Bold)
                 Text(text = "Seguidos", fontSize = 12.sp)
             }
@@ -187,10 +216,95 @@ private fun UserHeader(
                     contentColor = if (isFollowing) MaterialTheme.colorScheme.onSurfaceVariant else Color.White
                 ),
                 shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.padding(horizontal = 32.dp).fillMaxWidth()
+                modifier = Modifier
+                    .padding(horizontal = 32.dp)
+                    .fillMaxWidth()
             ) {
                 Text(text = if (isFollowing) "Dejar de seguir" else "Seguir")
             }
+        }
+    }
+}
+
+@Composable
+private fun FollowUsersDialog(
+    title: String,
+    users: List<UserModel>,
+    isLoading: Boolean,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = {
+            when {
+                isLoading -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+                users.isEmpty() -> {
+                    Text("No hay usuarios para mostrar.")
+                }
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 360.dp)
+                    ) {
+                        items(users) { user ->
+                            FollowUserItem(user = user)
+                            HorizontalDivider()
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cerrar")
+            }
+        }
+    )
+}
+
+@Composable
+private fun FollowUserItem(user: UserModel) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        AsyncImage(
+            model = user.profileImageUrl?.takeIf { it.isNotBlank() },
+            contentDescription = "Foto de perfil",
+            placeholder = painterResource(id = R.drawable.profile_photo),
+            error = painterResource(id = R.drawable.profile_photo),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(44.dp)
+                .clip(CircleShape)
+        )
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Column {
+            Text(
+                text = user.name.ifBlank { "Usuario sin nombre" },
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp
+            )
+            Text(
+                text = user.email,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 12.sp
+            )
         }
     }
 }
@@ -203,7 +317,7 @@ private fun UserReviewItem(
     onClick: () -> Unit
 ) {
     val isLiked = currentUserId != null && review.likedBy.contains(currentUserId)
-    
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -231,9 +345,9 @@ private fun UserReviewItem(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(4.dp))
-            
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,

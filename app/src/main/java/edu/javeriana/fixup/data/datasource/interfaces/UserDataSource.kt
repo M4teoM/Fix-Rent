@@ -4,5 +4,6 @@ import edu.javeriana.fixup.data.network.dto.UserDto
 
 interface UserDataSource {
     suspend fun getUserById(userId: String): UserDto?
+    suspend fun getUsersByIds(userIds: List<String>): List<UserDto>
     suspend fun toggleFollowUser(currentUserId: String, targetUserId: String, isFollowing: Boolean)
 }

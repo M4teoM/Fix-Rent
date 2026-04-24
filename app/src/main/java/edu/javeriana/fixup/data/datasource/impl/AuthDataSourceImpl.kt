@@ -34,6 +34,10 @@ class AuthDataSourceImpl @Inject constructor(
             "email" to email,
             "cedula" to cedula,
             "role" to role,
+            "name" to email.substringBefore("@"),
+            "phone" to cedula,
+            "followers" to emptyList<String>(),
+            "following" to emptyList<String>(),
             "createdAt" to Timestamp.now()
         )
 
