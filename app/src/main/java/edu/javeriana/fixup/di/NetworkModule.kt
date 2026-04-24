@@ -27,7 +27,7 @@ object NetworkModule {
      * En desarrollo local se suele usar "http://10.0.2.2:3000/", pero para producción en Render 
      * se requiere la URL pública con protocolo seguro.
      */
-    private const val BASE_URL = "http://10.0.2.2:3000/"
+    private const val BASE_URL = "https://fixup-backend-erh9.onrender.com/"
 
     /**
      * Provee una instancia configurada de OkHttpClient.

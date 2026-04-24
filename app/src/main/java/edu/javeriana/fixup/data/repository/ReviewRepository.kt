@@ -1,15 +1,21 @@
 package edu.javeriana.fixup.data.repository
 
 import edu.javeriana.fixup.data.datasource.interfaces.ReviewDataSource
+import edu.javeriana.fixup.data.network.api.FixUpApiService
+import edu.javeriana.fixup.data.network.dto.LikeNotificationDto
 import edu.javeriana.fixup.ui.model.ReviewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ReviewRepository @Inject constructor(
     private val reviewDataSource: ReviewDataSource,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val apiService: FixUpApiService
 ) {
+    private val scope = CoroutineScope(Dispatchers.IO)
     fun getReviewsByUserId(userId: String): Flow<Result<List<ReviewModel>>> =
         reviewDataSource.getReviewsByUserId(userId)
 
@@ -44,7 +50,22 @@ class ReviewRepository @Inject constructor(
                 reviewDataSource.removeLike(reviewId, currentUserId)
             } else {
                 reviewDataSource.addLike(reviewId, currentUserId)
+                // Enviar notificación al backend (fire-and-forget)
+                scope.launch {
+                    try {
+                        apiService.notifyLike(
+                            LikeNotificationDto(
+                                reviewId = reviewId,
+                                likerId = currentUserId,
+                                likerName = authRepository.currentUser?.displayName ?: "Un usuario"
+                            )
+                        )
+                    } catch (e: Exception) {
+                        // Error silencioso para no romper el flujo
+                    }
+                }
             }
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
