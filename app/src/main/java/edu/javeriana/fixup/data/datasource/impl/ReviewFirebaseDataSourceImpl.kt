@@ -1,95 +1,82 @@
 package edu.javeriana.fixup.data.datasource.impl
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
 import edu.javeriana.fixup.data.datasource.interfaces.ReviewDataSource
 import edu.javeriana.fixup.ui.model.ReviewModel
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 /**
- * Implementación de ReviewDataSource que usa Firebase Firestore como fuente de datos.
+ * Implementación de ReviewDataSource que usa Firebase Firestore como fuente de datos en tiempo real.
  */
 class ReviewFirebaseDataSourceImpl @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : ReviewDataSource {
 
-    override suspend fun getReviewsByUserId(userId: String): Result<List<ReviewModel>> {
-        return try {
-            val snapshot = firestore.collection("reviews")
-                .whereEqualTo("userId", userId)
-                .get()
-                .await()
-
-            val reviews = snapshot.documents.mapNotNull { doc ->
-                val rating = doc.getLong("rating")?.toInt() ?: 0
-                val comment = doc.getString("comment") ?: ""
-                val authorName = doc.getString("authorName") ?: "Usuario"
-                val authorProfileImageUrl = doc.getString("authorProfileImageUrl") ?: ""
-                val serviceTitle = doc.getString("serviceTitle") ?: doc.getString("articleName") ?: ""
-                val serviceId = doc.getString("serviceId") ?: doc.getString("articleId") ?: ""
-                val likedByRaw = doc.get("likedBy")
-                val likedBy = if (likedByRaw is List<*>) {
-                    likedByRaw.filterIsInstance<String>()
-                } else {
-                    emptyList()
+    override fun getReviewsByUserId(userId: String): Flow<Result<List<ReviewModel>>> = callbackFlow {
+        val subscription = firestore.collection("reviews")
+            .whereEqualTo("userId", userId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    trySend(Result.failure(error))
+                    return@addSnapshotListener
                 }
-                
-                ReviewModel(
-                    id = doc.id,
-                    userId = userId,
-                    serviceId = serviceId,
-                    rating = rating,
-                    comment = comment,
-                    authorName = authorName,
-                    authorProfileImageUrl = authorProfileImageUrl,
-                    serviceTitle = serviceTitle,
-                    date = "", 
-                    likedBy = likedBy
-                )
+                if (snapshot != null) {
+                    val reviews = mapSnapshotToReviews(snapshot)
+                    trySend(Result.success(reviews))
+                }
             }
-            Result.success(reviews)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        awaitClose { subscription.remove() }
     }
 
-    override suspend fun getReviewsByServiceId(serviceId: String): Result<List<ReviewModel>> {
-        return try {
-            val snapshot = firestore.collection("reviews")
-                .whereEqualTo("serviceId", serviceId)
-                .get()
-                .await()
-
-            val reviews = snapshot.documents.mapNotNull { doc ->
-                val rating = doc.getLong("rating")?.toInt() ?: 0
-                val comment = doc.getString("comment") ?: ""
-                val authorName = doc.getString("authorName") ?: "Usuario"
-                val authorProfileImageUrl = doc.getString("authorProfileImageUrl") ?: ""
-                val serviceTitle = doc.getString("serviceTitle") ?: ""
-                val userId = doc.getString("userId") ?: ""
-                val likedByRaw = doc.get("likedBy")
-                val likedBy = if (likedByRaw is List<*>) {
-                    likedByRaw.filterIsInstance<String>()
-                } else {
-                    emptyList()
+    override fun getReviewsByServiceId(serviceId: String): Flow<Result<List<ReviewModel>>> = callbackFlow {
+        val subscription = firestore.collection("reviews")
+            .whereEqualTo("serviceId", serviceId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    trySend(Result.failure(error))
+                    return@addSnapshotListener
                 }
-
-                ReviewModel(
-                    id = doc.id,
-                    userId = userId,
-                    serviceId = serviceId,
-                    rating = rating,
-                    comment = comment,
-                    authorName = authorName,
-                    authorProfileImageUrl = authorProfileImageUrl,
-                    serviceTitle = serviceTitle,
-                    date = "",
-                    likedBy = likedBy
-                )
+                if (snapshot != null) {
+                    val reviews = mapSnapshotToReviews(snapshot)
+                    trySend(Result.success(reviews))
+                }
             }
-            Result.success(reviews)
-        } catch (e: Exception) {
-            Result.failure(e)
+        awaitClose { subscription.remove() }
+    }
+
+    private fun mapSnapshotToReviews(snapshot: QuerySnapshot): List<ReviewModel> {
+        return snapshot.documents.mapNotNull { doc ->
+            val rating = doc.getLong("rating")?.toInt() ?: 0
+            val comment = doc.getString("comment") ?: ""
+            val authorName = doc.getString("authorName") ?: "Usuario"
+            val authorProfileImageUrl = doc.getString("authorProfileImageUrl") ?: ""
+            val serviceTitle = doc.getString("serviceTitle") ?: doc.getString("articleName") ?: ""
+            val serviceId = doc.getString("serviceId") ?: doc.getString("articleId") ?: ""
+            val userId = doc.getString("userId") ?: ""
+            val likedByRaw = doc.get("likedBy")
+            val likedBy = if (likedByRaw is List<*>) {
+                likedByRaw.filterIsInstance<String>()
+            } else {
+                emptyList()
+            }
+            
+            ReviewModel(
+                id = doc.id,
+                userId = userId,
+                serviceId = serviceId,
+                rating = rating,
+                comment = comment,
+                authorName = authorName,
+                authorProfileImageUrl = authorProfileImageUrl,
+                serviceTitle = serviceTitle,
+                date = "", 
+                likedBy = likedBy
+            )
         }
     }
 

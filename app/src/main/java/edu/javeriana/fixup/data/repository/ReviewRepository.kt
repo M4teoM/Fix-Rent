@@ -10,13 +10,11 @@ class ReviewRepository @Inject constructor(
     private val reviewDataSource: ReviewDataSource,
     private val authRepository: AuthRepository
 ) {
-    fun getReviewsByUserId(userId: String): Flow<Result<List<ReviewModel>>> = flow {
-        emit(reviewDataSource.getReviewsByUserId(userId))
-    }
+    fun getReviewsByUserId(userId: String): Flow<Result<List<ReviewModel>>> =
+        reviewDataSource.getReviewsByUserId(userId)
 
-    fun getReviewsByServiceId(serviceId: String): Flow<Result<List<ReviewModel>>> = flow {
-        emit(reviewDataSource.getReviewsByServiceId(serviceId))
-    }
+    fun getReviewsByServiceId(serviceId: String): Flow<Result<List<ReviewModel>>> =
+        reviewDataSource.getReviewsByServiceId(serviceId)
 
     suspend fun createReview(serviceId: String, serviceTitle: String, rating: Int, comment: String): Result<Boolean> {
         return try {

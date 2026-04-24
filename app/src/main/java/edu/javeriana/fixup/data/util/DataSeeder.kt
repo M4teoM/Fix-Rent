@@ -3,6 +3,7 @@ package edu.javeriana.fixup.data.util
 import edu.javeriana.fixup.data.network.api.FixUpApiService
 import edu.javeriana.fixup.data.network.dto.ReviewRequestDto
 import edu.javeriana.fixup.data.network.dto.ServiceDto
+import edu.javeriana.fixup.ui.model.ReviewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -71,6 +72,28 @@ class DataSeeder @Inject constructor(
                     comment = "Buen trabajo, aunque tardaron un poco más de lo esperado."
                 ))
             }
+
+            // Datos de prueba adicionales para respaldo UI
+            val mockReviews = listOf(
+                ReviewModel(
+                    userId = currentUserId,
+                    serviceId = resp1.id.toString(),
+                    rating = 5,
+                    comment = "Mock: ¡Me encantó el servicio de plomería!",
+                    authorName = "Juan Pérez",
+                    serviceTitle = "Reparación de Tuberías Premium",
+                    authorProfileImageUrl = "https://randomuser.me/api/portraits/men/1.jpg"
+                ),
+                ReviewModel(
+                    userId = currentUserId,
+                    serviceId = resp2.id.toString(),
+                    rating = 4,
+                    comment = "Mock: Muy buena iluminación LED.",
+                    authorName = "Maria Garcia",
+                    serviceTitle = "Instalación de Luces LED",
+                    authorProfileImageUrl = "https://randomuser.me/api/portraits/women/1.jpg"
+                )
+            )
 
             android.util.Log.d("DataSeeder", "Datos de prueba insertados con éxito")
         } catch (e: Exception) {

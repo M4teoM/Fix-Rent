@@ -24,10 +24,10 @@ object NetworkModule {
     /**
      * URL Base del backend. 
      * Para la defensa académica: Se utiliza HTTPS para garantizar la cifrado de datos en tránsito.
-     * En desarrollo local se suele usar "http://10.0.2.2:8080/", pero para producción en Render 
+     * En desarrollo local se suele usar "http://10.0.2.2:3000/", pero para producción en Render 
      * se requiere la URL pública con protocolo seguro.
      */
-    private const val BASE_URL = "https://fixup-backend-erh9.onrender.com/"
+    private const val BASE_URL = "http://10.0.2.2:3000/"
 
     /**
      * Provee una instancia configurada de OkHttpClient.

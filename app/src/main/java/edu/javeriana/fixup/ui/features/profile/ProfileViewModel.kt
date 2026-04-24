@@ -118,9 +118,7 @@ class ProfileViewModel @Inject constructor(
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            reviewRepository.createReview(uid, "Servicio General", rating, comment).onSuccess {
-                loadUserReviews() // Recargamos la lista
-            }.onFailure { error ->
+            reviewRepository.createReview(uid, "Servicio General", rating, comment).onFailure { error ->
                 _uiState.update { it.copy(isLoading = false, errorMessage = error.message) }
             }
         }

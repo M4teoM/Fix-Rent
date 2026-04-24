@@ -5,6 +5,8 @@ import edu.javeriana.fixup.data.mapper.toDomain
 import edu.javeriana.fixup.data.network.api.FixUpApiService
 import edu.javeriana.fixup.data.network.dto.ReviewRequestDto
 import edu.javeriana.fixup.ui.model.ReviewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 /**
@@ -14,26 +16,29 @@ class ReviewExpressDataSourceImpl @Inject constructor(
     private val apiService: FixUpApiService
 ) : ReviewDataSource {
 
-    override suspend fun getReviewsByUserId(userId: String): Result<List<ReviewModel>> {
-        return try {
+    override fun getReviewsByUserId(userId: String): Flow<Result<List<ReviewModel>>> = flow {
+        try {
             val response = apiService.getUserReviews(userId)
             if (response.isSuccessful) {
-                Result.success(response.body()?.map { it.toDomain() } ?: emptyList())
+                emit(Result.success(response.body()?.map { it.toDomain() } ?: emptyList()))
             } else {
-                Result.failure(Exception("Error al obtener reseñas del usuario: ${response.code()}"))
+                emit(Result.failure(Exception("Error al obtener reseñas del usuario: ${response.code()}")))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            emit(Result.failure(e))
         }
     }
 
-    override suspend fun getReviewsByServiceId(serviceId: String): Result<List<ReviewModel>> {
-        return try {
-            val id = serviceId.toIntOrNull() ?: return Result.failure(Exception("ID de servicio inválido"))
+    override fun getReviewsByServiceId(serviceId: String): Flow<Result<List<ReviewModel>>> = flow {
+        try {
+            val id = serviceId.toIntOrNull() ?: run {
+                emit(Result.failure(Exception("ID de servicio inválido")))
+                return@flow
+            }
             val reviews = apiService.getReviewsByServiceId(id)
-            Result.success(reviews.map { it.toDomain() })
+            emit(Result.success(reviews.map { it.toDomain() }))
         } catch (e: Exception) {
-            Result.failure(e)
+            emit(Result.failure(e))
         }
     }
 

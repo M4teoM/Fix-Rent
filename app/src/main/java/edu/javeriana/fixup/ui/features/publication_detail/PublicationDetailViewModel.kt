@@ -82,7 +82,6 @@ class PublicationDetailViewModel @Inject constructor(
             val result = reviewRepository.createReview(serviceId, serviceTitle, rating, comment)
             result.onSuccess { 
                 _uiState.update { it.copy(isSendingReview = false, reviewSent = true) }
-                loadReviews(serviceId.toIntOrNull() ?: 0) // Recargar lista
             }.onFailure { error ->
                 _uiState.update { 
                     it.copy(isSendingReview = false, reviewError = "No se pudo enviar la reseña")
