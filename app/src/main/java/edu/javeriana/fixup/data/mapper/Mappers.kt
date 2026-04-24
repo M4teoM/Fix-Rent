@@ -22,13 +22,14 @@ fun ArticleDto.toDomain(): ArticleModel {
 }
 
 fun ReviewDto.toDomain(): ReviewModel {
+    val author = authorName ?: user?.name ?: "Usuario Desconocido"
     return ReviewModel(
         id = id ?: "",
         userId = userId ?: user?.id ?: "",
         rating = rating ?: 0,
         comment = comment ?: "",
         date = date ?: "",
-        authorName = authorName ?: "Usuario Desconocido",
+        authorName = author,
         authorProfileImageUrl = authorProfileImageUrl ?: user?.profileImage ?: "",
         serviceTitle = serviceTitle ?: "Servicio Desconocido",
         serviceId = articleId ?: service?.id?.toString() ?: "",

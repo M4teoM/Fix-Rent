@@ -66,4 +66,13 @@ class UserRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
+    suspend fun updateFcmToken(userId: String, token: String): Result<Unit> {
+        return try {
+            userDataSource.updateFcmToken(userId, token)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

@@ -28,31 +28,26 @@ class UserDataSourceImpl @Inject constructor(
 
     override suspend fun getUsersByIds(userIds: List<String>): List<UserDto> {
         if (userIds.isEmpty()) return emptyList()
-
-        return userIds.mapNotNull { userId ->
-            getUserById(userId)
-        }
+        return userIds.mapNotNull { userId -> getUserById(userId) }
     }
 
     override suspend fun toggleFollowUser(currentUserId: String, targetUserId: String, isFollowing: Boolean) {
         val batch = firestore.batch()
-        
+
         val followingRef = firestore.collection("users").document(currentUserId)
             .collection("following").document(targetUserId)
         val followersRef = firestore.collection("users").document(targetUserId)
             .collection("followers").document(currentUserId)
-        
+
         if (isFollowing) {
-            // Unfollow: delete documents
             batch.delete(followingRef)
             batch.delete(followersRef)
         } else {
-            // Follow: create documents
             val data = mapOf("timestamp" to com.google.firebase.Timestamp.now())
             batch.set(followingRef, data)
             batch.set(followersRef, data)
         }
-        
+
         batch.commit().await()
     }
 
@@ -96,5 +91,11 @@ class UserDataSourceImpl @Inject constructor(
             .get()
             .await()
         return snapshot.documents.map { it.id }
+    }
+
+    override suspend fun updateFcmToken(userId: String, token: String) {
+        firestore.collection("users").document(userId)
+            .update("fcmToken", token)
+            .await()
     }
 }

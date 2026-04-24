@@ -1,5 +1,6 @@
 package edu.javeriana.fixup.ui.features.auth.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -9,11 +10,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
 class LogInViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val userRepository: edu.javeriana.fixup.data.repository.UserRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LogInUiState())
@@ -48,9 +52,18 @@ class LogInViewModel @Inject constructor(
             
             val result = authRepository.signIn(email, password)
             
-            result.onSuccess {
-                _uiState.update { it.copy(isLoading = false) }
-                onSuccess()
+            result.onSuccess { user ->
+                // Obtener y registrar el token de FCM
+                viewModelScope.launch {
+                    try {
+                        val token = FirebaseMessaging.getInstance().token.await()
+                        userRepository.updateFcmToken(user.uid, token)
+                    } catch (e: Exception) {
+                        Log.e("LogInViewModel", "Error al obtener token FCM", e)
+                    }
+                    _uiState.update { it.copy(isLoading = false) }
+                    onSuccess()
+                }
             }.onFailure { e ->
                 // Usamos directamente el mensaje que viene del repositorio (mapeado por AppError)
                 _uiState.update { it.copy(isLoading = false, error = e.message) }

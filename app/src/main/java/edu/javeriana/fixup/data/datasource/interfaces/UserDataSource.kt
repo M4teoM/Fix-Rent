@@ -11,4 +11,5 @@ interface UserDataSource {
     suspend fun getFollowingCount(userId: String): Long
     suspend fun getFollowersIds(userId: String): List<String>
     suspend fun getFollowingIds(userId: String): List<String>
+    suspend fun updateFcmToken(userId: String, token: String)
 }
