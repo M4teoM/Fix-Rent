@@ -72,6 +72,8 @@ fun PublicationDetailScreen(
                     description = uiState.description,
                     reviews = uiState.reviews,
                     isSendingReview = uiState.isSendingReview,
+                    isFollowing = uiState.isFollowing,
+                    isFollowingLoading = uiState.isFollowingLoading,
                     currentUserId = viewModel.getCurrentUserId(),
                     onBackClick = onBackClick,
                     onContactClick = onContactClick,
@@ -79,7 +81,8 @@ fun PublicationDetailScreen(
                     onSendReview = { rating, comment ->
                         viewModel.sendReview(rating, comment)
                     },
-                    onLikeClick = { reviewId -> viewModel.toggleLikeReview(reviewId) }
+                    onLikeClick = { reviewId -> viewModel.toggleLikeReview(reviewId) },
+                    onFollowClick = { viewModel.toggleFollow() }
                 )
                 else -> ErrorState(
                     errorText = uiState.error ?: "Publicación no encontrada",
@@ -116,12 +119,15 @@ private fun PublicationContent(
     description: String,
     reviews: List<ReviewModel>,
     isSendingReview: Boolean,
+    isFollowing: Boolean,
+    isFollowingLoading: Boolean,
     currentUserId: String?,
     onBackClick: () -> Unit,
     onContactClick: () -> Unit,
     onUserProfileClick: (String) -> Unit,
     onSendReview: (Int, String) -> Unit,
-    onLikeClick: (String) -> Unit
+    onLikeClick: (String) -> Unit,
+    onFollowClick: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
@@ -129,21 +135,36 @@ private fun PublicationContent(
             contentPadding = PaddingValues(bottom = 32.dp)
         ) {
             item {
-                AsyncImage(
-                    model = publication.imageUrl,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp),
-                    contentScale = ContentScale.Crop
-                )
+                Box {
+                    AsyncImage(
+                        model = publication.imageUrl,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(300.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                    IconButton(
+                        onClick = onBackClick,
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .align(Alignment.TopStart)
+                            .background(Color.Black.copy(alpha = 0.3f), CircleShape)
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = Color.White)
+                    }
+                }
             }
 
             item {
                 Column(modifier = Modifier.padding(16.dp)) {
                     PublicationInfo(publication, description)
                     Spacer(modifier = Modifier.height(24.dp))
-                    FixerSection()
+                    FixerSection(
+                        isFollowing = isFollowing,
+                        isLoading = isFollowingLoading,
+                        onFollowClick = onFollowClick
+                    )
                     Spacer(modifier = Modifier.height(24.dp))
                     BenefitsSection()
                     Spacer(modifier = Modifier.height(24.dp))
@@ -454,7 +475,11 @@ private fun ReviewItem(
 }
 
 @Composable
-private fun FixerSection() {
+private fun FixerSection(
+    isFollowing: Boolean,
+    isLoading: Boolean,
+    onFollowClick: () -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
@@ -475,7 +500,7 @@ private fun FixerSection() {
                 contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.width(16.dp))
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text("Tu Especialista FixUp", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text("Verificado • 4.8 ★", color = SoftFawn, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
                 Text(
@@ -484,6 +509,28 @@ private fun FixerSection() {
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     lineHeight = 16.sp
                 )
+            }
+            Button(
+                onClick = onFollowClick,
+                modifier = Modifier.height(36.dp),
+                shape = RoundedCornerShape(18.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isFollowing) MaterialTheme.colorScheme.surface else SoftFawn,
+                    contentColor = if (isFollowing) SoftFawn else Color.White
+                ),
+                border = if (isFollowing) androidx.compose.foundation.BorderStroke(1.dp, SoftFawn) else null,
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
+                enabled = !isLoading
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = SoftFawn)
+                } else {
+                    Text(
+                        if (isFollowing) "Siguiendo" else "Seguir",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
     }
