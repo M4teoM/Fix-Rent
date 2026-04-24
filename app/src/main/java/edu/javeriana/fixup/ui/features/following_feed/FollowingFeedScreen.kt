@@ -64,7 +64,11 @@ fun FollowingFeedScreen(
                 }
             } else if (uiState.publications.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No hay publicaciones recientes de las personas que sigues.")
+                    Text(
+                        "No ha hecho publicaciones",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             } else {
                 LazyColumn(

@@ -11,5 +11,7 @@ data class PublicationDetailUiState(
     val isSendingReview: Boolean = false,
     val reviewSent: Boolean = false,
     val reviewError: String? = null,
+    val isFollowing: Boolean = false,
+    val isFollowingLoading: Boolean = false,
     val error: String? = null
 )

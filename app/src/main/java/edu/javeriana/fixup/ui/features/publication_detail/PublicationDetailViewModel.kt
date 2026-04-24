@@ -7,6 +7,7 @@ import edu.javeriana.fixup.data.network.dto.ReviewRequestDto
 import edu.javeriana.fixup.data.repository.FeedRepository
 import edu.javeriana.fixup.data.repository.ReviewRepository
 import edu.javeriana.fixup.data.repository.AuthRepository
+import edu.javeriana.fixup.data.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +19,8 @@ import javax.inject.Inject
 class PublicationDetailViewModel @Inject constructor(
     private val repository: FeedRepository,
     private val reviewRepository: ReviewRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(PublicationDetailUiState())
     val uiState: StateFlow<PublicationDetailUiState> = _uiState.asStateFlow()
@@ -43,6 +45,7 @@ class PublicationDetailViewModel @Inject constructor(
                     )
                 }
                 loadReviews(id)
+                checkFollowingStatus(publication.authorId)
             }.onFailure { error ->
                 _uiState.update { 
                     it.copy(
@@ -50,6 +53,37 @@ class PublicationDetailViewModel @Inject constructor(
                         error = "Error al cargar la publicación: ${error.message}"
                     )
                 }
+            }
+        }
+    }
+
+    private fun checkFollowingStatus(authorId: String?) {
+        val currentUserId = authRepository.currentUser?.uid
+        if (currentUserId == null || authorId == null) return
+
+        viewModelScope.launch {
+            userRepository.getUserById(currentUserId).collect { result ->
+                result.onSuccess { currentUser ->
+                    val isFollowing = currentUser.following.contains(authorId)
+                    _uiState.update { it.copy(isFollowing = isFollowing) }
+                }
+            }
+        }
+    }
+
+    fun toggleFollow() {
+        val currentUserId = authRepository.currentUser?.uid ?: return
+        val authorId = _uiState.value.publication?.authorId ?: return
+        val isFollowing = _uiState.value.isFollowing
+
+        _uiState.update { it.copy(isFollowingLoading = true) }
+
+        viewModelScope.launch {
+            val result = userRepository.toggleFollow(currentUserId, authorId, isFollowing)
+            result.onSuccess {
+                _uiState.update { it.copy(isFollowing = !isFollowing, isFollowingLoading = false) }
+            }.onFailure {
+                _uiState.update { it.copy(isFollowingLoading = false) }
             }
         }
     }
