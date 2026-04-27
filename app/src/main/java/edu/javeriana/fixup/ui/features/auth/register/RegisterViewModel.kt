@@ -24,6 +24,8 @@ class RegisterViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(RegisterUiState())
     val uiState: StateFlow<RegisterUiState> = _uiState.asStateFlow()
 
+    private val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".toRegex()
+
     fun onEmailChanged(email: String) {
         _uiState.update { it.copy(email = email, error = null) }
     }
@@ -33,15 +35,19 @@ class RegisterViewModel @Inject constructor(
     }
 
     fun onCedulaChanged(cedula: String) {
-        _uiState.update { it.copy(cedula = cedula) }
+        _uiState.update { it.copy(cedula = cedula, error = null) }
     }
 
     fun onRoleSelected(role: String) {
-        _uiState.update { it.copy(selectedRole = role) }
+        _uiState.update { it.copy(selectedRole = role, error = null) }
     }
 
     fun onErrorDismissed() {
         _uiState.update { it.copy(error = null) }
+    }
+
+    private fun isEmailValid(email: String): Boolean {
+        return email.matches(emailRegex)
     }
 
     /**
@@ -56,14 +62,24 @@ class RegisterViewModel @Inject constructor(
         val cedula = _uiState.value.cedula.trim()
         val role = _uiState.value.selectedRole
 
-        // Validación básica de campos
+        // Validación robusta de campos
         if (email.isBlank() || password.isBlank() || cedula.isBlank() || role.isBlank()) {
-            _uiState.update { it.copy(error = "Por favor completa todos los campos, incluyendo el rol") }
+            _uiState.update { it.copy(error = "Por favor completa todos los campos") }
+            return
+        }
+
+        if (!isEmailValid(email)) {
+            _uiState.update { it.copy(error = "El formato del correo no es válido") }
             return
         }
 
         if (password.length < 6) {
             _uiState.update { it.copy(error = "La contraseña debe tener al menos 6 caracteres") }
+            return
+        }
+
+        if (cedula.length < 5) {
+            _uiState.update { it.copy(error = "La cédula debe ser válida") }
             return
         }
 
@@ -81,12 +97,11 @@ class RegisterViewModel @Inject constructor(
             
             authResult.onSuccess { firebaseUser ->
                 // PASO 2: Sincronización con el Backend (PostgreSQL)
-                // Usamos el UID generado por Firebase como ID en nuestra base de datos
                 val userDto = UserDto(
                     id = firebaseUser.uid,
-                    name = email.substringBefore("@"), // Placeholder o nombre derivado
+                    name = email.substringBefore("@"),
                     email = email,
-                    phone = cedula, // Usamos la cédula como identificador de contacto
+                    phone = cedula,
                     address = null,
                     role = role,
                     profileImageUrl = null
@@ -98,7 +113,6 @@ class RegisterViewModel @Inject constructor(
                     _uiState.update { it.copy(isLoading = false) }
                     onSuccess()
                 }.onFailure { e ->
-                    // Si el backend falla, informamos al usuario. 
                     _uiState.update { 
                         it.copy(
                             isLoading = false, 
@@ -108,14 +122,8 @@ class RegisterViewModel @Inject constructor(
                 }
 
             }.onFailure { e ->
-                val errorMessage = when {
-                    e.message?.contains("email") == true &&
-                            e.message?.contains("already") == true -> "Este correo ya está registrado"
-                    e.message?.contains("network") == true -> "Error de conexión. Verifica tu internet"
-                    e.message?.contains("badly formatted") == true -> "El formato del correo no es válido"
-                    else -> "Error en Firebase: ${e.message}"
-                }
-                _uiState.update { it.copy(isLoading = false, error = errorMessage) }
+                // El repositorio ya devuelve mensajes amigables vía AppError
+                _uiState.update { it.copy(isLoading = false, error = e.message) }
             }
         }
     }

@@ -21,12 +21,12 @@ class AuthDataSourceImpl @Inject constructor(
 
     override suspend fun signIn(email: String, password: String): FirebaseUser {
         val result = auth.signInWithEmailAndPassword(email, password).await()
-        return result.user ?: throw Exception("Error al iniciar sesión")
+        return result.user ?: throw Exception("No se pudo obtener el usuario después del inicio de sesión")
     }
 
     override suspend fun signUp(email: String, password: String, cedula: String, role: String): FirebaseUser {
         val result = auth.createUserWithEmailAndPassword(email, password).await()
-        val user = result.user ?: throw Exception("Error al registrar el usuario")
+        val user = result.user ?: throw Exception("No se pudo obtener el usuario después del registro")
 
         // Guardar información adicional en Firestore
         val userData = mapOf(
@@ -46,7 +46,18 @@ class AuthDataSourceImpl @Inject constructor(
         return user
     }
 
-    override fun signOut() {
+    override suspend fun signOut() {
+        val userId = auth.currentUser?.uid
+        if (userId != null) {
+            try {
+                // Borrar el token de FCM en Firestore antes de cerrar sesión
+                firestore.collection("users").document(userId)
+                    .update("fcmToken", null)
+                    .await()
+            } catch (e: Exception) {
+                // Si falla (ej. por reglas de seguridad), cerramos sesión igualmente
+            }
+        }
         auth.signOut()
     }
 }

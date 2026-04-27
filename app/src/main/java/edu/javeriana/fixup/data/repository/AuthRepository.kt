@@ -70,8 +70,8 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    /** Cierra la sesión activa. */
-    fun signOut() {
+    /** Cierra la sesión activa borrando el token de FCM. */
+    suspend fun signOut() {
         dataSource.signOut()
     }
 }

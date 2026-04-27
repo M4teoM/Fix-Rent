@@ -23,6 +23,8 @@ class LogInViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(LogInUiState())
     val uiState: StateFlow<LogInUiState> = _uiState.asStateFlow()
 
+    private val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".toRegex()
+
     fun onEmailChanged(email: String) {
         _uiState.update { it.copy(email = email, error = null) }
     }
@@ -35,6 +37,10 @@ class LogInViewModel @Inject constructor(
         _uiState.update { it.copy(error = null) }
     }
 
+    private fun isEmailValid(email: String): Boolean {
+        return email.matches(emailRegex)
+    }
+
     /**
      * Llama al repositorio (que ahora devuelve Result) para iniciar sesión.
      */
@@ -42,8 +48,19 @@ class LogInViewModel @Inject constructor(
         val email = _uiState.value.email.trim()
         val password = _uiState.value.password
 
+        // Validaciones previas
         if (email.isBlank() || password.isBlank()) {
             _uiState.update { it.copy(error = "Por favor completa todos los campos") }
+            return
+        }
+
+        if (!isEmailValid(email)) {
+            _uiState.update { it.copy(error = "El formato del correo no es válido") }
+            return
+        }
+
+        if (password.length < 6) {
+            _uiState.update { it.copy(error = "La contraseña debe tener al menos 6 caracteres") }
             return
         }
 

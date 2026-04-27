@@ -170,7 +170,9 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun signOut() {
-        authRepository.signOut()
+        viewModelScope.launch {
+            authRepository.signOut()
+        }
     }
 
     /**
