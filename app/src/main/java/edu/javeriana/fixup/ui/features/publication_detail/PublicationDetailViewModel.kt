@@ -154,14 +154,7 @@ class PublicationDetailViewModel @Inject constructor(
         _uiState.update { it.copy(reviews = newReviews) }
 
         viewModelScope.launch {
-            reviewRepository.toggleLike(reviewId, isLiked).onSuccess {
-                if (!isLiked) {
-                    val name = authRepository.currentUser?.displayName
-                        ?: authRepository.currentUser?.email?.substringBefore("@")
-                        ?: "Usuario"
-                    notificationRepository.notifyLike(reviewId, userId, name)
-                }
-            }.onFailure {
+            reviewRepository.toggleLike(reviewId, isLiked, review.userId).onFailure {
                 _uiState.update { it.copy(reviews = oldReviews) }
             }
         }

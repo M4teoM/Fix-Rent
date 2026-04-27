@@ -55,6 +55,11 @@ abstract class DataModule {
         checkoutDataSourceImpl: CheckoutDataSourceImpl
     ): CheckoutDataSource
 
+    @Binds
+    abstract fun bindNotificationDataSource(
+        notificationFirebaseDataSourceImpl: NotificationFirebaseDataSourceImpl
+    ): NotificationDataSource
+
     companion object {
         @Provides
         @Singleton

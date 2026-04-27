@@ -27,13 +27,13 @@ class ProfileViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(
         ProfileUiState(
-            name = profileRepository.currentUser?.email?.substringBefore("@") ?: "Usuario",
+            name = profileRepository.currentUser?.displayName 
+                ?: profileRepository.currentUser?.email?.substringBefore("@") 
+                ?: "Usuario",
             email = profileRepository.currentUser?.email ?: "",
-            address = "Bogotá, Colombia",
-            phone = "Sin número",
-            role = "Cliente",
             profileImageUrl = profileRepository.currentUser?.photoUrl?.toString() ?: defaultImageUrl,
-            isLoading = false
+            isLoading = true,
+            isDataLoaded = false
         )
     )
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
@@ -52,19 +52,20 @@ class ProfileViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             name = data["name"] as? String ?: user.displayName ?: user.email?.substringBefore("@") ?: "Usuario",
-                            phone = data["phone"] as? String ?: "Sin número",
-                            address = data["address"] as? String ?: "Sin dirección",
+                            phone = data["phone"] as? String ?: "",
+                            address = data["address"] as? String ?: "",
                             role = data["role"] as? String ?: "Cliente",
                             followersCount = data["followersCount"] as? Long ?: 0L,
                             followingCount = data["followingCount"] as? Long ?: 0L,
-                            isLoading = false
+                            isLoading = false,
+                            isDataLoaded = true
                         )
                     }
                 } else {
-                    _uiState.update { it.copy(isLoading = false) }
+                    _uiState.update { it.copy(isLoading = false, isDataLoaded = true) }
                 }
             }.onFailure { error ->
-                _uiState.update { it.copy(isLoading = false, errorMessage = error.message) }
+                _uiState.update { it.copy(isLoading = false, isDataLoaded = true, errorMessage = error.message) }
             }
         }
     }
@@ -234,14 +235,7 @@ class ProfileViewModel @Inject constructor(
         _uiState.update { it.copy(reviews = newReviews) }
 
         viewModelScope.launch {
-            reviewRepository.toggleLike(reviewId, isLiked).onSuccess {
-                if (!isLiked) {
-                    val name = authRepository.currentUser?.displayName
-                        ?: authRepository.currentUser?.email?.substringBefore("@")
-                        ?: "Usuario"
-                    notificationRepository.notifyLike(reviewId, userId, name)
-                }
-            }.onFailure {
+            reviewRepository.toggleLike(reviewId, isLiked, review.userId).onFailure {
                 _uiState.update { it.copy(reviews = oldReviews) }
             }
         }

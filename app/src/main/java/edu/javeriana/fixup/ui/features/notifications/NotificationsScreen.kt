@@ -136,17 +136,21 @@ fun RequestRow(item: NotificationItemModel) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Indicador de no leído (punto rojo)
-        Box(
-            modifier = Modifier
-                .size(8.dp)
-                .background(Color.Red, CircleShape)
-        )
+        if (!item.isRead) {
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .background(Color.Red, CircleShape)
+            )
+        } else {
+            Spacer(modifier = Modifier.size(8.dp))
+        }
 
         Spacer(modifier = Modifier.width(12.dp))
 
         // Imagen de perfil circular
         AsyncImage(
-            model = item.profileImage,
+            model = item.profileImageUrl,
             contentDescription = null,
             modifier = Modifier
                 .size(52.dp)
@@ -156,7 +160,7 @@ fun RequestRow(item: NotificationItemModel) {
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        // Contenido principal (Nombre, Tiempo, Descripción)
+        // Contenido principal (Título, Fecha, Mensaje)
         Column(
             modifier = Modifier.weight(1f)
         ) {
@@ -165,7 +169,7 @@ fun RequestRow(item: NotificationItemModel) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = item.name,
+                    text = item.title,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onBackground,
@@ -175,7 +179,7 @@ fun RequestRow(item: NotificationItemModel) {
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = item.time,
+                    text = item.date,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp,
                     maxLines = 1
@@ -183,7 +187,7 @@ fun RequestRow(item: NotificationItemModel) {
             }
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = item.description,
+                text = item.message,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp,
                 lineHeight = 18.sp
@@ -211,10 +215,10 @@ fun RequestRow(item: NotificationItemModel) {
             }
         }
 
-        if (item.hasPreview && item.previewImage != null) {
+        if (item.hasPreview && item.previewImageUrl != null) {
             Spacer(modifier = Modifier.width(12.dp))
             AsyncImage(
-                model = item.previewImage,
+                model = item.previewImageUrl,
                 contentDescription = null,
                 modifier = Modifier
                     .size(56.dp)
@@ -229,6 +233,51 @@ fun RequestRow(item: NotificationItemModel) {
 @Composable
 fun NotificationsScreenPreview() {
     FixUpTheme {
-        NotificationsScreen()
+        val mockNotifications = listOf(
+            NotificationItemModel(
+                id = "1",
+                title = "Andres Contreras",
+                message = "Aceptó tu propuesta de remodelación.",
+                date = "hace 2 min",
+                isRead = false,
+                profileImageUrl = "https://via.placeholder.com/150",
+                showButton = true
+            ),
+            NotificationItemModel(
+                id = "2",
+                title = "Marta Lucía",
+                message = "Te envió un nuevo mensaje sobre la cocina.",
+                date = "hace 1 hora",
+                isRead = true,
+                profileImageUrl = "https://via.placeholder.com/150",
+                hasPreview = true,
+                previewImageUrl = "https://via.placeholder.com/150"
+            )
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = "Tus nuevas solicitudes",
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(horizontal = 20.dp)
+            )
+            Spacer(modifier = Modifier.height(18.dp))
+            FilterChips()
+            Spacer(modifier = Modifier.height(16.dp))
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 24.dp)
+            ) {
+                items(mockNotifications) { request ->
+                    RequestRow(request)
+                }
+            }
+        }
     }
 }

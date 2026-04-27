@@ -13,11 +13,15 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import edu.javeriana.fixup.MainActivity
 import edu.javeriana.fixup.R
+import edu.javeriana.fixup.data.network.dto.NotificationDto
+import edu.javeriana.fixup.data.repository.NotificationRepository
 import edu.javeriana.fixup.data.repository.UserRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -26,6 +30,9 @@ class FixUpMessagingService : FirebaseMessagingService() {
 
     @Inject
     lateinit var userRepository: UserRepository
+
+    @Inject
+    lateinit var notificationRepository: NotificationRepository
 
     private val job = SupervisorJob()
     private val scope = CoroutineScope(Dispatchers.IO + job)
@@ -44,18 +51,41 @@ class FixUpMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
         
-        when (remoteMessage.data["type"]) {
-            "LIKE_EVENT" -> {
-                val title = remoteMessage.notification?.title ?: "¡Nueva interacción!"
-                val body = remoteMessage.notification?.body ?: "A alguien le gustó tu reseña."
-                showNotification(title, body)
-            }
-            "FOLLOW_EVENT" -> {
-                val title = remoteMessage.notification?.title ?: "¡Nuevo seguidor!"
-                val body = remoteMessage.notification?.body ?: "Alguien comenzó a seguirte."
-                showNotification(title, body)
+        val type = remoteMessage.data["type"]
+        val targetUserId = remoteMessage.data["targetUserId"]
+        val title = remoteMessage.notification?.title ?: "FixUp"
+        val body = remoteMessage.notification?.body ?: "Tienes una nueva notificación"
+        
+        saveAndShowNotification(title, body, type, targetUserId)
+    }
+
+    private fun saveAndShowNotification(title: String, body: String, type: String?, targetUserId: String?) {
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+        
+        // Only save and show if there's no targetUserId (broadcast) 
+        // OR if the current user is the target
+        if (targetUserId != null && targetUserId != currentUserId) {
+            Log.d("FCM", "Notification ignored: targetUserId ($targetUserId) does not match currentUserId ($currentUserId)")
+            return
+        }
+
+        if (currentUserId != null) {
+            scope.launch {
+                notificationRepository.saveNotification(
+                    currentUserId,
+                    NotificationDto(
+                        id = "",
+                        title = title,
+                        message = body,
+                        date = "hace un momento", // O formatear fecha real
+                        isRead = false,
+                        actionType = if (type == "RESPOND") "RESPOND" else null
+                    )
+                )
             }
         }
+        
+        showNotification(title, body)
     }
 
     private fun showNotification(title: String, body: String) {

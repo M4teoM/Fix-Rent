@@ -7,11 +7,12 @@ data class NotificationsUiState(
 
 data class NotificationItemModel(
     val id: String,
-    val name: String,
-    val time: String,
-    val description: String,
-    val profileImage: Int,
+    val title: String,
+    val message: String,
+    val date: String,
+    val isRead: Boolean,
+    val profileImageUrl: String? = null,
     val showButton: Boolean = false,
     val hasPreview: Boolean = false,
-    val previewImage: Int? = null
+    val previewImageUrl: String? = null
 )

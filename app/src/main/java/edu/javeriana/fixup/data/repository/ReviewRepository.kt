@@ -43,7 +43,7 @@ class ReviewRepository @Inject constructor(
         }
     }
 
-    suspend fun toggleLike(reviewId: String, isCurrentlyLiked: Boolean): Result<Unit> {
+    suspend fun toggleLike(reviewId: String, isCurrentlyLiked: Boolean, targetUserId: String = ""): Result<Unit> {
         return try {
             val currentUserId = authRepository.currentUser?.uid ?: return Result.failure(Exception("Usuario no autenticado"))
             if (isCurrentlyLiked) {
@@ -51,17 +51,20 @@ class ReviewRepository @Inject constructor(
             } else {
                 reviewDataSource.addLike(reviewId, currentUserId)
                 // Enviar notificación al backend (fire-and-forget)
-                scope.launch {
-                    try {
-                        apiService.notifyLike(
-                            LikeNotificationDto(
-                                reviewId = reviewId,
-                                likerId = currentUserId,
-                                likerName = authRepository.currentUser?.displayName ?: "Un usuario"
+                if (targetUserId.isNotEmpty()) {
+                    scope.launch {
+                        try {
+                            apiService.notifyLike(
+                                LikeNotificationDto(
+                                    reviewId = reviewId,
+                                    likerId = currentUserId,
+                                    likerName = authRepository.currentUser?.displayName ?: "Un usuario",
+                                    targetUserId = targetUserId
+                                )
                             )
-                        )
-                    } catch (e: Exception) {
-                        // Error silencioso para no romper el flujo
+                        } catch (e: Exception) {
+                            // Error silencioso para no romper el flujo
+                        }
                     }
                 }
             }

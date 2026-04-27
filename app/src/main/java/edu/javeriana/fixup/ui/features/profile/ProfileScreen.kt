@@ -107,23 +107,35 @@ fun ProfileScreen(
             }
         }
     ) { padding ->
-        ProfileContent(
-            modifier = Modifier.padding(padding),
-            uiState = uiState,
-            currentUserId = viewModel.getCurrentUserId(),
-            onChangePhoto = {
-                galleryLauncher.launch("image/*")
-            },
-            onEditReview = { reviewId, rating, comment ->
-                viewModel.updateReview(reviewId, rating, comment)
-            },
-            onDeleteReview = { reviewId ->
-                viewModel.deleteReview(reviewId)
-            },
-            onLikeReview = { reviewId ->
-                viewModel.toggleLikeReview(reviewId)
+        if (uiState.isLoading && !uiState.isDataLoaded) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .background(MaterialTheme.colorScheme.background),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = SoftFawn)
             }
-        )
+        } else {
+            ProfileContent(
+                modifier = Modifier.padding(padding),
+                uiState = uiState,
+                currentUserId = viewModel.getCurrentUserId(),
+                onChangePhoto = {
+                    galleryLauncher.launch("image/*")
+                },
+                onEditReview = { reviewId, rating, comment ->
+                    viewModel.updateReview(reviewId, rating, comment)
+                },
+                onDeleteReview = { reviewId ->
+                    viewModel.deleteReview(reviewId)
+                },
+                onLikeReview = { reviewId ->
+                    viewModel.toggleLikeReview(reviewId)
+                }
+            )
+        }
     }
 }
 
