@@ -6,17 +6,18 @@ import edu.javeriana.fixup.data.datasource.interfaces.RentDataSource
 import edu.javeriana.fixup.data.network.api.FixUpApiService
 import edu.javeriana.fixup.ui.model.PropertyModel
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
- * Implementación de RentDataSource con datos quemados (Mock) para Alquiler.
- * Se han migrado los servicios reales a FeedDataSource.
+ * Implementación de RentDataSource con datos en memoria para Alquiler.
  */
+@Singleton
 class RentDataSourceImpl @Inject constructor(
     private val apiService: FixUpApiService,
     private val storage: FirebaseStorage
 ) : RentDataSource {
 
-    private val mockProperties = listOf(
+    private val mockProperties = mutableListOf(
         PropertyModel(
             id = 101,
             title = "Apartamento en Chapinero",
@@ -52,8 +53,7 @@ class RentDataSourceImpl @Inject constructor(
     )
 
     override suspend fun getRentProperties(): List<PropertyModel> {
-        // Retornamos datos locales en lugar de llamar a la API
-        return mockProperties
+        return mockProperties.toList()
     }
 
     override suspend fun getPropertyById(id: Int): PropertyModel {
@@ -62,7 +62,11 @@ class RentDataSourceImpl @Inject constructor(
     }
 
     override suspend fun createProperty(property: PropertyModel, imageUri: Uri): PropertyModel {
-        // Simulamos la creación retornando el mismo objeto con un ID generado
-        return property.copy(id = (100..999).random())
+        val newProperty = property.copy(
+            id = (105..9999).random(),
+            imageUrl = imageUri.toString()
+        )
+        mockProperties.add(0, newProperty) // Agregar al principio para visibilidad inmediata
+        return newProperty
     }
 }

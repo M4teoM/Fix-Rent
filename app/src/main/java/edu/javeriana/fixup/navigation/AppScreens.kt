@@ -18,6 +18,7 @@ sealed class AppScreens(val route: String) {
     data object AllPublications : AppScreens("all_publications")
     data object FollowingFeed : AppScreens("following_feed")
     data object Checkout : AppScreens("checkout")
+    data object WompiPayment : AppScreens("wompi_payment")
     data object Notifications : AppScreens("notifications")
     data object Chat : AppScreens("chat")
     data object Settings : AppScreens("settings")

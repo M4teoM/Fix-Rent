@@ -8,6 +8,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import edu.javeriana.fixup.data.network.api.FixUpApiService
 import edu.javeriana.fixup.data.datasource.interfaces.*
 import edu.javeriana.fixup.data.datasource.impl.*
+import edu.javeriana.fixup.data.wompi.WompiDataSource
+import edu.javeriana.fixup.data.wompi.WompiDataSourceImpl
 import dagger.Provides
 import javax.inject.Singleton
 
@@ -59,6 +61,11 @@ abstract class DataModule {
     abstract fun bindNotificationDataSource(
         notificationFirebaseDataSourceImpl: NotificationFirebaseDataSourceImpl
     ): NotificationDataSource
+
+    @Binds
+    abstract fun bindWompiDataSource(
+        wompiDataSourceImpl: WompiDataSourceImpl
+    ): WompiDataSource
 
     companion object {
         @Provides

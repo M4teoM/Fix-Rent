@@ -4,7 +4,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -20,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import edu.javeriana.fixup.ui.theme.FixUpTheme
 
 @Composable
@@ -28,57 +30,72 @@ fun CheckoutScreen(
     onBackClick: () -> Unit,
     onConfirmClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: CheckoutViewModel = viewModel()
+    viewModel: CheckoutViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-
-        CheckoutHeader(onBackClick = onBackClick)
-
-        CheckoutOptionRow(
-            label = "Direccion",
-            value = uiState.selectedAddress,
-            onClick = { }
-        )
-
-        CheckoutOptionRow(
-            label = "Dia",
-            value = "Programado\n${uiState.selectedDate}",
-            onClick = { }
-        )
-
-        CheckoutOptionRow(
-            label = "PAGO",
-            value = uiState.selectedPayment,
-            onClick = { }
-        )
-
-        CheckoutOptionRow(
-            label = "PROMOCIONES",
-            value = "Aplicar código promocional",
-            onClick = { }
-        )
-
-        CheckoutItemsSection(items = uiState.items)
-
-        CheckoutSummary(subtotal = uiState.subtotal)
-
-        Button(
-            onClick = onConfirmClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+    Scaffold(
+        bottomBar = {
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shadowElevation = 8.dp,
+                color = MaterialTheme.colorScheme.surface
+            ) {
+                Button(
+                    onClick = onConfirmClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .height(56.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+                ) {
+                    Text("Haz un pedido", color = Color.White, fontWeight = FontWeight.Bold)
+                }
+            }
+        }
+    ) { padding ->
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(padding)
+                .background(MaterialTheme.colorScheme.background)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("Haz un pedido", color = Color.White)
+
+            CheckoutHeader(onBackClick = onBackClick)
+
+            CheckoutOptionRow(
+                label = "Direccion",
+                value = uiState.selectedAddress,
+                onClick = { }
+            )
+
+            CheckoutOptionRow(
+                label = "Dia",
+                value = "Programado\n${uiState.selectedDate}",
+                onClick = { }
+            )
+
+            CheckoutOptionRow(
+                label = "PAGO",
+                value = uiState.selectedPayment,
+                onClick = { }
+            )
+
+            CheckoutOptionRow(
+                label = "PROMOCIONES",
+                value = "Aplicar código promocional",
+                onClick = { }
+            )
+
+            CheckoutItemsSection(items = uiState.items)
+
+            CheckoutSummary(subtotal = uiState.subtotal)
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

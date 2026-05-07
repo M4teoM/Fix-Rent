@@ -13,6 +13,7 @@ import edu.javeriana.fixup.ui.features.auth.login.LogInScreen
 import edu.javeriana.fixup.ui.features.auth.register.RegisterScreen
 import edu.javeriana.fixup.ui.features.chat.ChatScreen
 import edu.javeriana.fixup.ui.features.checkout.CheckoutScreen
+import edu.javeriana.fixup.ui.features.wompi.WompiScreen
 import edu.javeriana.fixup.ui.features.feed.AllPublicationsScreen
 import edu.javeriana.fixup.ui.features.feed.FeedScreen
 import edu.javeriana.fixup.ui.features.notifications.NotificationsScreen
@@ -196,7 +197,37 @@ fun AppNavigation(
             CheckoutScreen(
                 viewModel = hiltViewModel(),
                 onBackClick = { navController.popBackStack() },
-                onConfirmClick = { navController.navigate(AppScreens.Chat.route) }
+                onConfirmClick = { 
+                    val reference = "FIX-RENT-${System.currentTimeMillis()}"
+                    navController.navigate(AppScreens.WompiPayment.route + "?amount=1900000&email=usuario@ejemplo.com&reference=$reference")
+                }
+            )
+        }
+
+        // Wompi Payment screen
+        composable(
+            route = AppScreens.WompiPayment.route + "?amount={amount}&email={email}&reference={reference}",
+            arguments = listOf(
+                navArgument("amount") { type = NavType.LongType; defaultValue = 1900000L },
+                navArgument("email") { type = NavType.StringType; defaultValue = "usuario@ejemplo.com" },
+                navArgument("reference") { type = NavType.StringType; defaultValue = "" }
+            )
+        ) { backStackEntry ->
+            val amount = backStackEntry.arguments?.getLong("amount") ?: 1900000L
+            val email = backStackEntry.arguments?.getString("email") ?: "usuario@ejemplo.com"
+            val reference = backStackEntry.arguments?.getString("reference") ?: "FIX-RENT-${System.currentTimeMillis()}"
+            
+            WompiScreen(
+                amount = amount,
+                email = email,
+                reference = reference,
+                viewModel = hiltViewModel(),
+                onPaymentSuccess = {
+                    navController.navigate(AppScreens.Chat.route) {
+                        popUpTo(AppScreens.Checkout.route) { inclusive = true }
+                    }
+                },
+                onBackClick = { navController.popBackStack() }
             )
         }
 
